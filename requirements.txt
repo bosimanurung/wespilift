@@ -1,9 +1,8 @@
-streamlit==1.38.0
-pandas==2.2.2
-numpy==1.26.0
-pandasql==0.7.3
+streamlit
+pandas
+pandasql
 math
-PIL==1.1.7
-altair==4.0.0
-openpyxl==3.1.3
-distutils==3.12
+PIL
+altair
+openpyxl
+distutils
