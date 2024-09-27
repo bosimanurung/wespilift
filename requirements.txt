@@ -1,7 +1,6 @@
 streamlit
 pandas
 pandasql
-math
 PIL
 altair
 openpyxl
