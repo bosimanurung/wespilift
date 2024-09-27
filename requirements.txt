@@ -1,8 +1,8 @@
-numpy
-pandas
-pandasql
 streamlit
+pandas
+numpy
+pandasql
+math
 PIL
 altair
-matplotlib
-math
+openpyxl
