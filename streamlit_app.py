@@ -2,13 +2,12 @@ import streamlit as st
 import pandas as pd
 import pandasql as ps
 import altair as alt
-from PIL import Image
 
 st.set_page_config(layout="wide")
 
-st.sidebar.text('Powered by: ')
-image = Image.open('data/logo_wespi.png')
-st.sidebar.image(image)
+#st.sidebar.text('Powered by: ')
+#image = Image.open('data/logo_wespi.png')
+#st.sidebar.image(image)
 
 # -- page setup --
 my_calculations = st.Page(
