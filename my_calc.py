@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import pandasql as ps
-import math
+import altair as alt
 
 #@st.dialog("ID Calculation")
 #def show_id_form():
@@ -10,18 +10,18 @@ import math
 st.title("My Calculations")
 
 #open datas
-mycalc = pd.read_csv('data/mycalc.csv')
-muserlogin = pd.read_csv('data/MUserLogin.csv')
-minstrument = pd.read_csv('data/MInstrument.csv')
-mcalcmethod = pd.read_csv('data/MCalcMethod.csv')
-mwelltype = pd.read_csv('data/MWellType.csv')
-mmeasurement = pd.read_csv('data/MMeasurement.csv')
-mcasingsize = pd.read_csv('data/MCasingSize.csv')
-mcasingid = pd.read_csv('data/MCasingID.csv')
-mtubingsize = pd.read_csv('data/MTubingSize.csv')
-mtubingid = pd.read_csv('data/MTubingID.csv')
-mtubingcoeff = pd.read_csv('data/MTubingCoeff.csv')
-#ipr_data = pd.read_csv('data/ipr_data.csv')
+mycalc = pd.read_csv('mycalc.csv')
+muserlogin = pd.read_csv('MUserLogin.csv')
+minstrument = pd.read_csv('MInstrument.csv')
+mcalcmethod = pd.read_csv('MCalcMethod.csv')
+mwelltype = pd.read_csv('MWellType.csv')
+mmeasurement = pd.read_csv('MMeasurement.csv')
+mcasingsize = pd.read_csv('MCasingSize.csv')
+mcasingid = pd.read_csv('MCasingID.csv')
+mtubingsize = pd.read_csv('MTubingSize.csv')
+mtubingid = pd.read_csv('MTubingID.csv')
+mtubingcoeff = pd.read_csv('MTubingCoeff.csv')
+ipr_data = pd.read_csv('ipr_data.csv')
 
 mycalc3 = ps.sqldf("select m.user_id, u.username, m.well_name, m.field_name, m.company, m.engineer, \
         m.date_calc, m.id_instrument, i.instrument, m.id_calc_method, c.calc_method, m.id_welltype, \
@@ -165,7 +165,8 @@ if wellname:
 
     #Hitung2an Calculation sblm IPR Curve
     _qmax = _qtest / (1 - 0.2 * (_fbhp/_sbhp) - 0.8 * (_fbhp/_sbhp) ** 2)
-    _Pwf_at_Qdes = (5 * math.sqrt(3.24 - 3.2 * (_qdes/_qmax)) - 1) / 8 * _sbhp
+    # _Pwf_at_Qdes = (5 * math.sqrt(3.24 - 3.2 * (_qdes/_qmax)) - 1) / 8 * _sbhp --> library math susah diDeploy
+    _Pwf_at_Qdes = (5 * (3.24 - 3.2 * (_qdes/_qmax))**0.5 - 1) / 8 * _sbhp
 
     # Vt=Vo+Vg+Vw; Vo=(1-WC)*Qdes*Bo; Vg=Bg * Free Gas (FG); Vw=WC * Qdes
     # Bo=0.972+0.000147*((Rs*SQRT(SGg/Sgo)+1.25*BHT)^1.175); 
@@ -185,11 +186,12 @@ if wellname:
     _sgfluid = (_wc/100) * _sgw + (1-(_wc/100) * _sgo)
     # PIP=Pwf@Qdes-(MidPerf-PSD)*SGFluid/2.31
     _pip = _Pwf_at_Qdes - (_MidPerf - _psd) * _sgfluid/2.32 
-    # Rs=Sgg*(( (PIP/18) * (10^(0.0125*API – 0.00091*BHT)) ) ^1.2048)
-    _Rs=_sgg*(( (_pip/18) * (10**(0.0125*_api - 0.00091*_bht)) ) **1.2048)
+    # Rs=Sgg*(( (PIP/18) * (10^(0.0125*API – 0.00091*BHT)) )^1.2048)
+    _Rs=_sgg*(( (_pip/18) * (10**(0.0125*_api - 0.00091*_bht)) )**1.2048)
 
     # Bo=0.972+0.000147*((Rs*SQRT(SGg/Sgo)+1.25*BHT)^1.175); 
-    _Bo = 0.972+0.000147*((_Rs*math.sqrt(_sgg/_sgo)+1.25*_bht)**1.175)
+    # _Bo = 0.972+0.000147*((_Rs*math.sqrt(_sgg/_sgo)+1.25*_bht)**1.175) --> math masalah diDeploy
+    _Bo = 0.972+0.000147*((_Rs * (_sgg/_sgo)**0.5 + 1.25 * _bht) ** 1.175)
     # Vo=(1-WC)*Qdes*Bo;
     _Vo = (1-(_wc/100))*_qdes*_Bo;
 
@@ -276,9 +278,6 @@ if wellname:
         st.write('Fluid Gradient : ', _fluid_gradient, 'psi/', _measurement, 'TVD')
         st.write('Di file xls: 0.43463')
 
-    import matplotlib.pyplot as plt
-    import numpy as np
-
     #->comment: Plotting
     #->comment: Create a selection that chooses the nearest point & selects based on x-value
     #chat_nearest = alt.selection(type='single', nearest=True, on='mouseover',
@@ -327,14 +326,14 @@ if wellname:
     #plt.grid(color='darkgray', linestyle=':', linewidth=0.5)
     #plt.show()
 
-    import altair as alt
     st.write('\n')
     st.title("Inflow Performance Relationships")    
-    row5_1, row5_spacer2, row5_2= st.columns((11.1, .1, 4.5))
+    #row5_1, row5_spacer2, row5_2= st.columns((11.1, .1, 4))
+    row5_1, row5_2= st.columns((11.1, 4))
     with row5_1:
     #col1, col2 = st.columns(2, gap="large", vertical_alignment="center")
     #with col1:
-        ipr_data = pd.read_csv('data/ipr_data.csv')
+        #ipr_data = pd.read_csv('data/ipr_data.csv')
         #->comment: make the chart
         _ipr_curve = alt.Chart(ipr_data).mark_line().encode(
             x='Flow rate, Q (BFPD)',
