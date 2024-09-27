@@ -3,4 +3,3 @@ pandas
 pandasql
 altair
 openpyxl
-distutils
