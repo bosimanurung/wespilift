@@ -346,7 +346,7 @@ if wellname:
         st.altair_chart(_ipr_curve, use_container_width=True)               
     with row5_2:
     #with col2:
-        st.write('The Data:') 
+        #st.write('The Data:') 
         st.dataframe(ipr_data, hide_index=True)
 
     #->comment: import altair with an abbreviated alias
