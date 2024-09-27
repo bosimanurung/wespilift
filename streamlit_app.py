@@ -3,7 +3,7 @@ import streamlit as st
 st.set_page_config(layout="wide")
 
 #st.sidebar.text('Powered by: ')
-#image = Image.open('data/logo_wespi.png')
+#image = Image.open('logo_wespi.png')
 #st.sidebar.image(image)
 
 # -- page setup --
