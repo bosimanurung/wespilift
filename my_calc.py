@@ -1,8 +1,3 @@
-import streamlit as st
-import pandas as pd
-import pandasql as ps
-import altair as alt
-
 #@st.dialog("ID Calculation")
 #def show_id_form():
 #    st.text_input("ID Calculation")
