@@ -99,6 +99,10 @@ if wellname:
         st.markdown(_welltype)
         #st.write('\n')
         st.subheader('Measurement:')
+        if _measurement=='m':
+            st.write('Meter (', _measurement, ')')
+        elif _measurement=='ft':
+            st.write('Feet (', _measurement, ')')            
         st.markdown(_measurement)
         #st.write('\n')
         st.subheader('Comment or Info:')
@@ -124,8 +128,9 @@ if wellname:
     _bottom_liner_at=mycalc4['bottom_liner_at'].values[0]
     st.write('\n')
     st.title("Data Input")
-    col1, col2 = st.columns(2, gap="medium", vertical_alignment="top")
-    with col1:
+    #col1, col2 = st.columns(2, gap="medium", vertical_alignment="top")
+    row3_1, row3_spacer, row3_2= st.columns((3, 1, 3))        
+    with row3_1:
         st.header("Basic Data (Required)", divider="gray")
         st.write('Top Perfo    : ', _top_perfo_tvd, _measurement, 'TVD')
         st.write('Top Perfo    : ', _top_perfo_md, _measurement, 'MD')
@@ -146,7 +151,7 @@ if wellname:
         st.header("Basic Data (Optional)", divider="gray")
         st.write('P. Casing    : ', _p_casing, 'psi')
         st.write('Pb           : ', _pb, 'psig')
-    with col2:        
+    with row3_2:     
         st.header("API/Sgo", divider="gray")
         st.write('API          : ', _api)
         st.write('Sgo          : ', _sgo)
