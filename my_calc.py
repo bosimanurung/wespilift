@@ -103,7 +103,6 @@ if wellname:
             st.write('Meter (', _measurement, ')')
         elif _measurement=='ft':
             st.write('Feet (', _measurement, ')')            
-        st.markdown(_measurement)
         #st.write('\n')
         st.subheader('Comment or Info:')
         st.markdown(_comment_or_info)
