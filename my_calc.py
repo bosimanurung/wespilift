@@ -124,7 +124,7 @@ if id_calc_01:
     with row3_1:
         st.header("Basic Data (Required)", divider="gray")
         #st.write('Top Perfo: {} {} TVD'.format(_top_perfo_tvd, _measurement))
-        st.write('Top Perfo: ', _top_perfo_tvd, _measurement, 'TVD'))
+        st.write('Top Perfo    : ', _top_perfo_tvd, _measurement, 'TVD')
         st.write('Top Perfo    : ', _top_perfo_md, _measurement, 'MD')
         st.write('Bottom Perfo : ', _bottom_perfo_tvd, _measurement, 'TVD')
         st.write('Bottom Perfo : ', _bottom_perfo_md, _measurement, 'MD')
