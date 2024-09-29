@@ -44,7 +44,7 @@ st.dataframe(mycalc3, hide_index=True)
 id_calc_01=0
 col1, col2 = st.columns(2, gap="medium", vertical_alignment="top")
 with col1:
-    st.markdown("<p style='text-align: justify;'>Masukkan Nomor ID Calculatio untuk melihat detail informasi \
+    st.markdown("<p style='text-align: justify;'>Masukkan Nomor ID Calculation untuk melihat detail informasi \
         perhitungan yang sudah dibuat. Diantaranya adalah Well Name, Field Name, Created by, Company, \
         dan lain-lain.</p>", unsafe_allow_html=True)
 
