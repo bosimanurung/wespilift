@@ -3,10 +3,6 @@ import pandas as pd
 import pandasql as ps
 import altair as alt
 
-#@st.dialog("ID Calculation")
-#def show_id_form():
-#    st.text_input("ID Calculation")
-
 st.title("My Calculations")
 
 #open datas
@@ -45,22 +41,18 @@ mycalc3 = ps.sqldf("select m.user_id, u.username, m.well_name, m.field_name, m.c
 
 st.dataframe(mycalc3, hide_index=True)
 
-wellname=id_calc_01=""
+id_calc_01=0
 col1, col2 = st.columns(2, gap="medium", vertical_alignment="top")
 with col1:
-    st.markdown("<p style='text-align: justify;'>Masukkan Well Name untuk melihat detail informasi \
+    st.markdown("<p style='text-align: justify;'>Masukkan Nomor ID Calculatio untuk melihat detail informasi \
         perhitungan yang sudah dibuat. Diantaranya adalah Well Name, Field Name, Created by, Company, \
         dan lain-lain.</p>", unsafe_allow_html=True)
-        #Engineer, Date Input, dan lain-lain.</p>", unsafe_allow_html=True)
-#        Diantaranya adalah Well Name, Field Name, Created by, Company, Engineer, Date Input, Instrument, Calculation Method, \
-#        Well Type, Unit Measurement, dan lain-lain.</p>", unsafe_allow_html=True)
 
 with col2:
-    wellname = st.text_input("Well Name To Explore:")
+    id_calc_01 = st.number_input("Nomor ID Calculation To Explore:", 0, None, "min", 1)
      
 if wellname:
-    mycalc4 = mycalc3.loc[mycalc3['well_name']==wellname].reset_index(drop=True)
-    #mycalc4b = pd.DataFrame(mycalc4)]
+    mycalc4 = mycalc3.loc[mycalc3['id_calc_01']==id-calc_01].reset_index(drop=True)
 
     _username = mycalc4['username'].values[0]; _well_name = mycalc4['well_name'].values[0]
     _field_name=mycalc4['field_name'].values[0]; _company=mycalc['company'].values[0]; _engineer=mycalc4['engineer'].values[0]
