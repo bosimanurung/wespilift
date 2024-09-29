@@ -3,6 +3,10 @@ import pandas as pd
 import pandasql as ps
 import altair as alt
 
+#@st.dialog("ID Calculation")
+#def show_id_form():
+#    st.text_input("ID Calculation")
+
 st.title("My Calculations")
 
 #open datas
@@ -19,7 +23,7 @@ mtubingid = pd.read_csv('MTubingID.csv')
 mtubingcoeff = pd.read_csv('MTubingCoeff.csv')
 ipr_data = pd.read_csv('ipr_data.csv')
 
-mycalc3 = ps.sqldf("select m.user_id, u.username, m.well_name, m.field_name, m.company, m.engineer, \
+mycalc3 = ps.sqldf("select m.id_calc, m.user_id, u.username, m.well_name, m.field_name, m.company, m.engineer, \
         m.date_calc, m.id_instrument, i.instrument, m.id_calc_method, c.calc_method, m.id_welltype, \
         w.welltype, m.id_measurement, meas.measurement, m.comment_or_info, m.top_perfo_tvd, m.top_perfo_md, \
         m.bottom_perfo_tvd, m.bottom_perfo_md, m.qtest, m.sbhp, m.fbhp, m.producing_gor, m.wc, m.bht, \
@@ -45,12 +49,12 @@ id_calc_01=0
 col1, col2 = st.columns(2, gap="medium", vertical_alignment="top")
 with col1:
     st.markdown("<p style='text-align: justify;'>Masukkan Nomor ID Calculation untuk melihat detail informasi \
-        perhitungan yang sudah dibuat. Diantaranya adalah Well Name, Field Name, Created by, Company, \
+        perhitungan yang sudah dibuat, seperti Well Name, Field Name, Created by, Company, \
         dan lain-lain.</p>", unsafe_allow_html=True)
 
 with col2:
-    id_calc_01 = st.number_input("Nomor ID Calculation To Explore:", 0, None, "min", 1)
-     
+    id_calc_01 = st.number_input("ID Calculation To Explore:", 0, None, "min", 1)
+   
 if id_calc_01:
     mycalc4 = mycalc3.loc[mycalc3['id_calc']==id_calc_01].reset_index(drop=True)
 
@@ -94,7 +98,7 @@ if id_calc_01:
         if _measurement=='m':
             st.write('Meter (', _measurement, ')')
         elif _measurement=='ft':
-            st.write('Feet (', _measurement, ')')            
+            st.write('Feet (', _measurement, ')')
         #st.write('\n')
         st.subheader('Comment or Info:')
         st.markdown(_comment_or_info)
@@ -119,11 +123,11 @@ if id_calc_01:
     _bottom_liner_at=mycalc4['bottom_liner_at'].values[0]
     st.write('\n')
     st.title("Data Input")
-    #col1, col2 = st.columns(2, gap="medium", vertical_alignment="top")
-    row3_1, row3_spacer, row3_2= st.columns((3, 1, 3))        
+    #col1, col2 = st.columns(2, gap="medium", vertical_alignment="top")    
+    row3_1, row3_spacer, row3_2= st.columns((3, 1, 3))
     with row3_1:
         st.header("Basic Data (Required)", divider="gray")
-        st.write('Top Perfo    : ', _top_perfo_tvd, _measurement, 'TVD')
+        st.write('Top Perfo: {} {} TVD'.format(_top_perfo_tvd, _measurement))
         st.write('Top Perfo    : ', _top_perfo_md, _measurement, 'MD')
         st.write('Bottom Perfo : ', _bottom_perfo_tvd, _measurement, 'TVD')
         st.write('Bottom Perfo : ', _bottom_perfo_md, _measurement, 'MD')
@@ -142,7 +146,7 @@ if id_calc_01:
         st.header("Basic Data (Optional)", divider="gray")
         st.write('P. Casing    : ', _p_casing, 'psi')
         st.write('Pb           : ', _pb, 'psig')
-    with row3_2:     
+    with row3_2:
         st.header("API/Sgo", divider="gray")
         st.write('API          : ', _api)
         st.write('Sgo          : ', _sgo)
@@ -276,58 +280,9 @@ if id_calc_01:
         st.write('Fluid Gradient : ', _fluid_gradient, 'psi/', _measurement, 'TVD')
         st.write('Di file xls: 0.43463')
 
-    #->comment: Plotting
-    #->comment: Create a selection that chooses the nearest point & selects based on x-value
-    #chat_nearest = alt.selection(type='single', nearest=True, on='mouseover',
-                                    #fields=['WEEK_START'], empty='none')
-            
-    #->comment: The basic line
-    #chat_line = alt.Chart(df_weekly_chat_app).mark_line(interpolate='linear').encode(
-                        #x=alt.X("WEEK_START:T", axis=alt.Axis(title="Week Start", titlePadding=15,  titleFontSize=20, titleFontWeight=900, labelAngle=-90), scale=alt.Scale(padding=32)),
-                        #y=alt.Y("WEEKLY_APP_PCT:Q", axis=alt.Axis(title=y_title, titlePadding=15, titleFontSize=20, titleFontWeight=900, format=y_format)),
-                                        #color=alt.Color('APP_TYPE:N',
-                                        #scale=alt.Scale(domain=['single text input', 'chat']),
-                                        #legend=alt.Legend(title=" ") ))
-            
-    #->comment: Transparent selectors across the ch-art. This is what tells us the x-value of the cursor
-    #chat_selectors = alt.Chart(df_weekly_chat_app).mark_point().encode(x='WEEK_START:T', opacity=alt.value(0),).add_selection(chat_nearest)
-            
-    #->comment: Draw points on the line, and highlight based on selection
-    #chat_points = chat_line.mark_point().encode(opacity=alt.condition(chat_nearest, alt.value(1), alt.value(0)))
-            
-    #->comment: Draw text labels near the points, and highlight based on selection
-    #chat_text = chat_line.mark_text(align='left', dx=0, dy=-15, fontSize=16).encode(text=alt.condition(chat_nearest, alt_text, alt.value(' ')))
-            
-    #->comment: Draw a rule at the location of the selection
-    #chat_rules = alt.Chart(df_weekly_chat_app).mark_rule(color='gray').encode(x='WEEK_START:T',).transform_filter(chat_nearest)
-            
-    #->comment: Put the five layers into a chart and bind the data
-    #chat_count = alt.layer(chat_line, chat_selectors, chat_points, chat_rules, chat_text
-            #).properties(width=800, height=500
-            #).configure(padding=20, background="#111111"
-            #).configure_legend(orient='bottom', titleFontSize=16, labelFontSize=14, titlePadding=0
-            #).configure_axis(labelFontSize=14)        
-    #st.altair_chart(chat_count, use_container_width=True)
-
-
-    #plt.plot(ipr_data['Flow_rate'], ipr_data['Pressure'])
-    #->comment: set title & label
-    #plt.title('GMV Value in 2019',color='darkblue', fontsize=17)
-    #plt.xlabel('Flow Rate, Q (BFPD)',fontsize=13,color='darkred')
-    #plt.ylabel('Pressure, P (psi)',fontsize=13,color='darkred')
-    #->comment: custom line
-    #plot_line = plt.plot(ipr_data['Flow_rate'], ipr_data['Pressure'])
-    #plt.setp(plot_line, color='blue', linestyle='-',  linewidth=2, marker='o')
-    #->comment: set start 0 y axis
-    #plt.ylim(ymin=0)
-    #->comment: set grid
-    #plt.grid(color='darkgray', linestyle=':', linewidth=0.5)
-    #plt.show()
-
     st.write('\n')
     st.title("Inflow Performance Relationships")    
-    #row5_1, row5_spacer2, row5_2= st.columns((11.1, .1, 4))
-    row5_1, row5_2= st.columns((11.1, 4))
+    row5_1, row5_spacer2, row5_2= st.columns((11.1, .02, 3.8))
     with row5_1:
     #col1, col2 = st.columns(2, gap="large", vertical_alignment="center")
     #with col1:
@@ -338,22 +293,9 @@ if id_calc_01:
             y='Pressure (psi)',
         ).mark_circle()  #.interactive()
         st.write('\n')
-        st.write('\n')
+        st.write('\n')  
         st.altair_chart(_ipr_curve, use_container_width=True)               
     with row5_2:
     #with col2:
-        #st.write('The Data:') 
+        #st.markdown('The Data:') 
         st.dataframe(ipr_data, hide_index=True)
-
-    #->comment: import altair with an abbreviated alias
-    #import altair as alt
-    #->comment: load a sample dataset as a pandas DataFrame
-    #from vega_datasets import data
-    #cars = data.cars()
-    #->comment: make the chart
-    #chart01 = alt.Chart(cars).mark_line().encode(
-    #    x='Horsepower',
-    #    y='Miles_per_Gallon',
-    #    color='Origin',
-    #).interactive()
-    #st.altair_chart(chart01, use_container_width=True)
