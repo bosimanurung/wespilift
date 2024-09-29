@@ -52,7 +52,7 @@ with col2:
     id_calc_01 = st.number_input("Nomor ID Calculation To Explore:", 0, None, "min", 1)
      
 if id_calc_01:
-    mycalc4 = mycalc3.loc[mycalc3['id_calc_01']==id_calc_01].reset_index(drop=True)
+    mycalc4 = mycalc3.loc[mycalc3['id_calc']==id_calc_01].reset_index(drop=True)
 
     _username = mycalc4['username'].values[0]; _well_name = mycalc4['well_name'].values[0]
     _field_name=mycalc4['field_name'].values[0]; _company=mycalc['company'].values[0]; _engineer=mycalc4['engineer'].values[0]
