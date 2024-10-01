@@ -3,6 +3,10 @@ import pandas as pd
 import pandasql as ps
 import altair as alt
 
+#@st.dialog("ID Calculation")
+#def show_id_form():
+#    st.text_input("ID Calculation")
+
 st.title("My Calculations")
 
 #open datas
@@ -63,7 +67,9 @@ if id_calc_01:
     col1, col2 = st.columns(2, gap="medium", vertical_alignment="top")
     with col1:
         st.subheader('Well Name:')
-        st.write(_well_name)
+        #st.write("<strong>)
+        _well_name2 = st.write(_well_name)
+        st.markdown("<strong>_well_name2</strong>", unsafe_allow_html=True)
         #st.write('\n')
         st.subheader('Field Name:')
         st.markdown(_field_name)
@@ -180,9 +186,12 @@ if id_calc_01:
     # MidPerf = 0.5(TopPerfoTVD+BottomPerfoTVD)
     _MidPerf = 0.5 * (_top_perfo_tvd + _bottom_perfo_tvd)
     # SGFluid = WC * SGw + (1 - WC) * Sgo
-    _sgfluid = (_wc/100) * _sgw + (1-(_wc/100) * _sgo)
-    # PIP=Pwf@Qdes-(MidPerf-PSD)*SGFluid/2.31
-    _pip = _Pwf_at_Qdes - (_MidPerf - _psd) * _sgfluid/2.32 
+    #         = 88% * 1.02 + (1- 88%) * 0.887147335
+    _sgfluid = (_wc/100) * _sgw + (1-(_wc/100)) * _sgo
+    
+    # PIP=Pwf@Qdes-(MidPerf-PSD)*SGFluid/2.31    
+    _pip = _Pwf_at_Qdes - ((_MidPerf - _psd) * (_sgfluid/2.31)) 
+    
     # Rs=Sgg*(( (PIP/18) * (10^(0.0125*API – 0.00091*BHT)) )^1.2048)
     _Rs=_sgg*(( (_pip/18) * (10**(0.0125*_api - 0.00091*_bht)) )**1.2048)
 
@@ -245,18 +254,26 @@ if id_calc_01:
     with col1:
         st.write("Pwf@Qdes: ", _Pwf_at_Qdes, 'psi')
         st.write('Qdes         : ', _qdes, 'BPD')
-        st.write('Composite SG : ', _composite_sg)
+        st.write('Composite SG : ', _composite_sg)        
         st.write('Di file xls: 0.490859')
+
         st.write('\n')
         st.write('PSD          : ', _psd, _measurement, 'TVD')
         st.write('WFL          : ', _wfl, _measurement, 'TVD')
-        st.write('Di file xls: 4744.936, cek PIP')
+        st.write('Di file xls: 4744.936')
+        st.write('Hitung2an:')
+        st.write('WFL = PSD - (PIP * 2.31 / SGFluid)')
+        st.write('=', _psd, '- ((', _pip, '* 2.31) /', _sgfluid)
+        st.write('=', _psd, '- (', _pip * 2.31, '/', _sgfluid)
+        st.write('=', _psd, '-', (_pip * 2.31), '/', _sgfluid)
+        st.write('=', _psd, '-', (_pip * 2.31) / _sgfluid)
+        st.write('=', _psd - (_pip * 2.31) / _sgfluid)
+        
         st.write('\n')
         st.write('Qmax         : ', _qmax, 'BPD')
         st.write('WHP          : ', _whp_hitung, _measurement, 'TVD')
         st.write('Di file xls: 345.0997')
         st.write('\n')
-            
         #1st st.write('SG Fluid     : ', _sgfluid)
         st.write('SG Fluid = WC * SGw + (1 - WC) * Sgo')
         st.write('= (', _wc, '/100) * ', _sgw, '+ (1 - (',  _wc, '/100)) * ', _sgo)
@@ -265,11 +282,24 @@ if id_calc_01:
         st.write('= ', (_wc/100) * _sgw, '+ ', (1 - (_wc/100)) * _sgo)
         _sgfluid = (_wc/100) * _sgw + (1-(_wc/100)) * _sgo
         st.write('SG Fluid     : ', _sgfluid)
-            
         st.write('Di file xls: 1.004')
+
         st.write('\n')        
         st.write('PIP          : ', _pip, 'psi')
         st.write('Di file xls: 523.7896')
+        st.write('Hitung2an:')
+        st.write('PIP = Pwf@Qdes - (MidPerf - PSD) * SGFluid / 2.31')
+        st.write('MidPerf = 0.5(TopPerfoTVD + BottomPerfoTVD)')
+        st.write('= 0.5 (', _top_perfo_tvd, '+ ', _bottom_perfo_tvd, ')')
+        st.write('= 0.5 (', _top_perfo_tvd + _bottom_perfo_tvd, ')')        
+        st.write('=', 0.5 * (_top_perfo_tvd + _bottom_perfo_tvd))
+        st.write('PIP = Pwf@Qdes - (MidPerf - PSD) * SGFluid / 2.31')
+        st.write('= ', _Pwf_at_Qdes, '- (', _MidPerf, '- ', _psd, ') * (',  _sgfluid, '/ 2.31)') 
+        st.write('=', _Pwf_at_Qdes, '-', _MidPerf - _psd, '*',  _sgfluid/2.31 )
+        st.write('=', _Pwf_at_Qdes, '-', (_MidPerf - _psd) * (_sgfluid/2.31) )
+        st.write('=', _Pwf_at_Qdes - ((_MidPerf - _psd) * (_sgfluid/2.31)), 'psi' )
+        #_pip = _Pwf_at_Qdes - (_MidPerf - _psd) * (_sgfluid/2.31) 
+
     with col2:
         st.write('P. Casing    : ', _p_casing_hitung, _measurement, 'TVD')
         st.write('Friction Loss: ', _friction_loss, _measurement, 'TVD')
