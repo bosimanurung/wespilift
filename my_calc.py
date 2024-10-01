@@ -256,7 +256,16 @@ if id_calc_01:
         st.write('WHP          : ', _whp_hitung, _measurement, 'TVD')
         st.write('Di file xls: 345.0997')
         st.write('\n')
+            
+        #1st st.write('SG Fluid     : ', _sgfluid)
+        st.write('SG Fluid = WC * SGw + (1 - WC) * Sgo')
+        st.write('= (', _wc, '/100) * ', _sgw, '+ (1 - (',  _wc, '/100)) * ', _sgo)
+        st.write('= ', _wc/100,' * ', _sgw, '+ (1 - ', _wc/100, ') * ', _sgo)
+        st.write('= ', _wc/100,' * ', _sgw, '+ ', 1 - (_wc/100), ' * ', _sgo)
+        st.write('= ', (_wc/100) * _sgw, '+ ', (1 - (_wc/100)) * _sgo)
+        _sgfluid = (_wc/100) * _sgw + (1-(_wc/100)) * _sgo
         st.write('SG Fluid     : ', _sgfluid)
+            
         st.write('Di file xls: 1.004')
         st.write('\n')        
         st.write('PIP          : ', _pip, 'psi')
