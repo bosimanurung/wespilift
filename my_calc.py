@@ -3,10 +3,6 @@ import pandas as pd
 import pandasql as ps
 import altair as alt
 
-#@st.dialog("ID Calculation")
-#def show_id_form():
-#    st.text_input("ID Calculation")
-
 st.title("My Calculations")
 
 #open datas
@@ -320,10 +316,6 @@ if id_calc_01:
     st.title("Inflow Performance Relationships")    
     row5_1, row5_spacer2, row5_2= st.columns((11.1, .02, 3.8))
     with row5_1:
-    #col1, col2 = st.columns(2, gap="large", vertical_alignment="center")
-    #with col1:
-        #ipr_data = pd.read_csv('data/ipr_data.csv')
-        #->comment: make the chart
         _ipr_curve = alt.Chart(ipr_data).mark_line().encode(
             x='Flow rate, Q (BFPD)',
             y='Pressure (psi)',
@@ -332,6 +324,4 @@ if id_calc_01:
         st.write('\n')  
         st.altair_chart(_ipr_curve, use_container_width=True)               
     with row5_2:
-    #with col2:
-        #st.markdown('The Data:') 
         st.dataframe(ipr_data, hide_index=True)
