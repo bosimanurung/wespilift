@@ -258,7 +258,6 @@ if id_calc_01:
         st.write('Hitung2an:')
         st.write('WFL = PSD - (PIP * 2.31 / SGFluid)')
         st.write('=', _psd, '- ((', _pip, '* 2.31) /', _sgfluid)
-        st.write('=', _psd, '- (', _pip * 2.31, '/', _sgfluid)
         st.write('=', _psd, '-', (_pip * 2.31), '/', _sgfluid)
         st.write('=', _psd, '-', (_pip * 2.31) / _sgfluid)
         st.write('=', _psd - (_pip * 2.31) / _sgfluid)
