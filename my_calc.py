@@ -305,7 +305,7 @@ if id_calc_01:
         st.write('= ', _Pwf_at_Qdes, '- (', _MidPerf, '- ', _psd, ') * (',  _sgfluid, '/ 2.31)') 
         st.write('=', _Pwf_at_Qdes, '-', _MidPerf - _psd, '*',  _sgfluid/2.31 )
         st.write('=', _Pwf_at_Qdes, '-', (_MidPerf - _psd) * (_sgfluid/2.31) )
-        st.write('=', round(_Pwf_at_Qdes - ((_MidPerf - _psd) * (_sgfluid/2.31)), 6), 'psi (selisih/beda 0.3 lbh besar)')
+        st.write('=', round(_Pwf_at_Qdes - ((_MidPerf - _psd) * (_sgfluid/2.31)), 2), 'psi (selisih/beda 0.3 lbh besar)')
         #_pip = _Pwf_at_Qdes - (_MidPerf - _psd) * (_sgfluid/2.31) 
 
     with col2:
@@ -331,7 +331,7 @@ if id_calc_01:
         st.write('=', round(_wfl + _whp_hitung + _cp + _friction_loss, 2), '(selisih/beda 1.2 lbh kecil)')
         st.write('\n')
 
-        _fluid_over_pump = round(_fluid_over_pump, 6)
+        _fluid_over_pump = round(_fluid_over_pump, 2)
         st.write('SBHP           : ', _sbhp, 'psig')
         st.write('Fluid Over Pump: ', _fluid_over_pump, _measurement, 'TVD')
         st.write('Di file xls: 1205.1334')
@@ -340,10 +340,10 @@ if id_calc_01:
         st.write('= ((', _pip, '-', _cp, ') * 2.31) /', _sgfluid)
         st.write('= (', _pip - _cp, '* 2.31) /', _sgfluid)
         st.write('=', (_pip - _cp) * 2.31, '/', _sgfluid)
-        st.write('=', round(((_pip - _cp) * 2.31) / _sgfluid, 6), '(selisih/beda 1.48 lbh besar)')
+        st.write('=', round(((_pip - _cp) * 2.31) / _sgfluid, 2), '(selisih/beda 1.48 lbh besar)')
         st.write('\n')
 
-        _fluid_gradient = round(_fluid_gradient, 6)
+        _fluid_gradient = round(_fluid_gradient, 2)
         st.write('FBHP           : ', _fbhp, 'psig')
         st.write('Fluid Gradient : ', _fluid_gradient, 'psi/', _measurement, 'TVD')
         st.write('Di file xls: 0.43463 (selisih/beda 0.0004 lbh kecil)')
