@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import pandasql as ps
 import altair as alt
+import matplotlib.pyplot as plt
 
 #@st.dialog("ID Calculation")
 #def show_id_form():
