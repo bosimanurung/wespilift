@@ -249,15 +249,15 @@ if id_calc_01:
     st.title("Calculation")
     col1, col2 = st.columns(2, gap="medium", vertical_alignment="top")
     with col1:
-        _Pwf_at_Qdes = round(_Pwf_at_Qdes, 6) # jadi 786.7571 yg sblmnya 786.757076405096
-        _composite_sg = round(_composite_sg, 6) # sblmnya 0.490559258022
+        _Pwf_at_Qdes = round(_Pwf_at_Qdes, 2) # jadi 786.7571 yg sblmnya 786.757076405096
+        _composite_sg = round(_composite_sg, 2) # sblmnya 0.490559258022
         st.write("Pwf@Qdes: ", _Pwf_at_Qdes, 'psi')
         st.write('Qdes         : ', _qdes, 'BPD')
         st.write('Composite SG : ', _composite_sg, '(selisih/beda 0.0003 lbh kecil)')
         st.write('Di file xls: 0.490859')
         st.write('\n')
 
-        _wfl = round(_wfl, 6) # sblmnya 4743.3883109093
+        _wfl = round(_wfl, 2) # sblmnya 4743.3883109093
         st.write('PSD          : ', _psd, _measurement, 'TVD')
         st.write('WFL          : ', _wfl, _measurement, 'TVD')
         st.write('Di file xls: 4744.936')
@@ -266,11 +266,11 @@ if id_calc_01:
         st.write('=', _psd, '- ((', _pip, '* 2.31) /', _sgfluid)
         st.write('=', _psd, '-', (_pip * 2.31), '/', _sgfluid)
         st.write('=', _psd, '-', (_pip * 2.31) / _sgfluid)
-        st.write('=', round(_psd - (_pip * 2.31) / _sgfluid, 6), '(selisih/beda 1.6 lbh kecil)')
+        st.write('=', round(_psd - (_pip * 2.31) / _sgfluid, 2), '(selisih/beda 1.6 lbh kecil)')
         st.write('\n')
         
-        _qmax = round(_qmax, 6)
-        _whp_hitung = round(_whp_hitung, 6)
+        _qmax = round(_qmax, 2)
+        _whp_hitung = round(_whp_hitung, 2)
         st.write('Qmax         : ', _qmax, 'BPD')
         st.write('WHP          : ', _whp_hitung, _measurement, 'TVD')
         st.write('Di file xls: 345.0997')
@@ -278,10 +278,10 @@ if id_calc_01:
         st.write('WHP = THP * 2.31 / SGFluid')
         st.write('= (', _whp, '* 2.31) /', _sgfluid)
         st.write('=', _whp * 2.31, '/', _sgfluid)
-        st.write('=', round((_whp * 2.31) / _sgfluid, 6), '(selisih/beda 0.3 lbh besar)')
+        st.write('=', round((_whp * 2.31) / _sgfluid, 2), '(selisih/beda 0.3 lbh besar)')
         st.write('\n')
 
-        _sgfluid = round(_sgfluid, 6)
+        _sgfluid = round(_sgfluid, 2)
         st.write('SG Fluid = WC * SGw + (1 - WC) * Sgo')
         st.write('= (', _wc, '/100) * ', _sgw, '+ (1 - (',  _wc, '/100)) * ', _sgo)
         st.write('= ', _wc/100,' * ', _sgw, '+ (1 - ', _wc/100, ') * ', _sgo)
@@ -292,7 +292,7 @@ if id_calc_01:
         st.write('Di file xls: 1.004')
         st.write('\n')
                 
-        _pip = round(_pip, 6)
+        _pip = round(_pip, 2)
         st.write('PIP          : ', _pip, 'psi')
         st.write('Di file xls: 523.7896')
         st.write('Hitung2an:')
@@ -309,7 +309,7 @@ if id_calc_01:
         #_pip = _Pwf_at_Qdes - (_MidPerf - _psd) * (_sgfluid/2.31) 
 
     with col2:
-        _friction_loss = round(_friction_loss, 6)
+        _friction_loss = round(_friction_loss, 2)
         _persen_free_gas = round(_persen_free_gas, 2)
         st.write('P. Casing    : ', _p_casing_hitung, _measurement, 'TVD')
         st.write('Friction Loss: ', _friction_loss, _measurement, 'TVD')
@@ -321,14 +321,14 @@ if id_calc_01:
         st.write('=', round((_Vg / _Vt) * 100, 2), '(selisih/beda 0.01 lbh kecil)')
         st.write('\n')
 
-        _tdh = round(_tdh, 6)
+        _tdh = round(_tdh, 2)
         st.write('TDH            : ', _tdh, _measurement, 'TVD')
         st.write('Di file xls: 5376.58')
         st.write('Hitung2an TDH:')
         st.write('= WFL + WHP + CP + FrictionLoss')
         st.write('CP Optional, bila tdk dinput, defaultnya nol')
         st.write('=', _wfl, '+', _whp_hitung, '+', _cp, '+', _friction_loss)
-        st.write('=', round(_wfl + _whp_hitung + _cp + _friction_loss, 6), '(selisih/beda 1.2 lbh kecil)')
+        st.write('=', round(_wfl + _whp_hitung + _cp + _friction_loss, 2), '(selisih/beda 1.2 lbh kecil)')
         st.write('\n')
 
         _fluid_over_pump = round(_fluid_over_pump, 6)
