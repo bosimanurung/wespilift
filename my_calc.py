@@ -22,7 +22,7 @@ mtubingsize = pd.read_csv('MTubingSize.csv')
 mtubingid = pd.read_csv('MTubingID.csv')
 mtubingcoeff = pd.read_csv('MTubingCoeff.csv')
 #ipr_data = pd.read_csv('ipr_data.csv')
-df_ipr_data = pd.DataFrame(columns=['Flow rate', 'Pressure'])
+#df_ipr_data = pd.DataFrame(columns=['Flow rate', 'Pressure'])
 
 mycalc3 = ps.sqldf("select m.id_calc, m.user_id, u.username, m.well_name, m.field_name, m.company, m.engineer, \
         m.date_calc, m.id_instrument, i.instrument, m.id_calc_method, c.calc_method, m.id_welltype, \
