@@ -406,7 +406,7 @@ if id_calc_01:
         fig, ax  = plt.subplots()
 
         # membuat line plot
-        plt.plot(df_ipr_data['Flow rate'], ipr_data['Pressure'])
+        plt.plot(df_ipr_data['Flow rate'], df_ipr_data['Pressure'])
 
         # set title & label
         plt.xlabel('Flow rate, Q (BFPD)',fontsize=13,color='darkred')
