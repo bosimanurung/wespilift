@@ -111,7 +111,7 @@ if id_calc_01:
     _sgw=mycalc4['sgw'].values[0]; _sgg=mycalc4['sgg'].values[0]; _qdes=mycalc4['qdes'].values[0]
     _psd=mycalc4['psd'].values[0]; _whp=mycalc4['whp'].values[0]; _psd_md=mycalc4['psd_md'].values[0]
     
-    _p_casing=mycalc4['p_casing'].values[0]; _pb=mycalc4['pb'].values[0]    
+    _p_casing=mycalc4['p_casing'].values[0]; _pb=mycalc4['pb'].values[0]; _cp=mycalc4['cp'].values[0] 
     _api=mycalc4['api'].values[0]; _sgo=mycalc4['sgo'].values[0]
 
     _casing_size=mycalc4['casing_size'].values[0]; _casing_id=mycalc4['casing_id'].values[0]
@@ -147,6 +147,7 @@ if id_calc_01:
         st.header("Basic Data (Optional)", divider="gray")
         st.write('P. Casing    : ', _p_casing, 'psi')
         st.write('Pb           : ', _pb, 'psig')
+        st.write('CP           : ', _cp, 'psi')
     with row3_2:
         st.header("API/Sgo", divider="gray")
         st.write('API          : ', _api)
@@ -237,7 +238,6 @@ if id_calc_01:
     _persen_free_gas = (_Vg / _Vt) * 100
 
     # TDH = sum(WFL, WHP, CP, FrictionLoss)  --> CP (Optional, bila tdk dinput, defaultnya nol) 
-    _cp = 0
     _tdh = _wfl + _whp_hitung + _cp + _friction_loss
 
     #Fluid Over Pump = (PIP-CP)*2.31/SGFluid
