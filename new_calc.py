@@ -2,11 +2,11 @@ import streamlit as st
 import pandas as pd
 import pandasql as ps
 import matplotlib.pyplot as plt
-import datetime
 from csv import writer
 
 #open datas
-mycalc = pd.read_csv('mycalc.csv')
+mnomor1 = pd.read_csv('mnomor1.csv')
+tmycalc = pd.read_csv('tmycalc.csv')
 muserlogin = pd.read_csv('MUserLogin.csv')
 minstrument = pd.read_csv('MInstrument.csv')
 mcalcmethod = pd.read_csv('MCalcMethod.csv')
@@ -17,24 +17,17 @@ mcasingid = pd.read_csv('MCasingID.csv')
 mtubingsize = pd.read_csv('MTubingSize.csv')
 mtubingid = pd.read_csv('MTubingID.csv')
 mtubingcoeff = pd.read_csv('MTubingCoeff.csv')
-#ipr_data = pd.read_csv('ipr_data.csv')
-df_ipr_data = pd.DataFrame(columns=['Flow rate', 'Pressure'])
+df_temp = pd.DataFrame()
 
 st.title("Add New Calculation")
 new_records = []
 
-_well_name = ''; _field_name = ''; _company = ''; _engineer = ''; #_dateToday = date(today)
-last_id_calc = _user_id = _id_instrument = _id_calc_method = _id_measurement = 0
-        
-_username_list = muserlogin['username'].unique().tolist() 
-_instrument_list = minstrument['instrument'].unique().tolist() 
-_calc_method_list = mcalcmethod['calc_method'].unique().tolist(); _welltype_list = mwelltype['welltype'].unique().tolist()
-_measurement_list =  mmeasurement['measurement'].unique().tolist()
-_comment_or_info = ''
-
-
 col1, col2 = st.columns(2, gap="medium", vertical_alignment="top")
 with col1:
+    _well_name = ''; _field_name = ''; _company = ''; _engineer = ''
+    _username_list = muserlogin['username'].unique().tolist() 
+    last_id_calc = _user_id = 0
+    
     _username = st.selectbox("Username: ", _username_list)
     _date_calc = st.date_input("Date Input: ")
     _well_name = st.text_input("Well Name:")
@@ -43,6 +36,12 @@ with col1:
     _engineer = st.text_input('Engineer: ')   
     
 with col2:
+    _id_instrument = _id_calc_method = _id_measurement = 0
+    _instrument_list = minstrument['instrument'].unique().tolist() 
+    _calc_method_list = mcalcmethod['calc_method'].unique().tolist(); _welltype_list = mwelltype['welltype'].unique().tolist()
+    _measurement_list =  mmeasurement['measurement'].unique().tolist()
+    _comment_or_info = ''
+    
     _instrument = st.selectbox("Instrument: ", _instrument_list)
     _calc_method = st.selectbox("Calculation Method: ", _calc_method_list)
     _welltype = st.selectbox("Well Type: ", _welltype_list)
@@ -64,16 +63,13 @@ with col2:
     mycalc_temp = mmeasurement.loc[mmeasurement['measurement']==_measurement].reset_index(drop=True)
     _id_measurement = mycalc_temp['id_measurement'].values[0]          
 
-#inputing basic data (required), etc.
-_top_perfo_tvd = _top_perfo_md = _bottom_perfo_tvd = _bottom_perfo_md = 0.01
-_qtest = _sbhp = _fbhp = _producing_gor = _wc = _bht = 0.01
-_sgw = _sgg = _qdes = _psd = _whp = _psd_md = 0.01
-
-_p_casing = _pb = cp = 0.01
-_api = _sgo = 0.01
-        
+#inputing basic data (required), etc.        
 row3_1, row3_spacer, row3_2= st.columns((3, 1, 3))
 with row3_1:
+    _top_perfo_tvd = _top_perfo_md = _bottom_perfo_tvd = _bottom_perfo_md = 0.01
+    _qtest = _sbhp = _fbhp = _producing_gor = _wc = _bht = 0.01
+    _sgw = _sgg = _qdes = _psd = _whp = _psd_md = 0.01
+    
     st.header("Basic Data (Required)", divider="gray")
     _top_perfo_tvd = st.number_input(f"Top Perfo ({_measurement} TVD)", 0.00, None, 'min', 1.00, format="%0.2f")
     _top_perfo_md = st.number_input(f'Top Perfo ({_measurement} MD)', 0.00, None, 'min', 1.00, format="%0.2f")
@@ -93,6 +89,9 @@ with row3_1:
     _psd_md = st.number_input(f'PSD ({_measurement} MD)', 0.00, None, 'min', 1.00, format="%0.2f")    
 
 with row3_2:
+    _p_casing = _pb = cp = 0.01
+    _api = _sgo = 0.01
+
     st.header("Basic Data (Optional)", divider="gray")
     _p_casing = st.number_input('P. Casing (psi)', 0.00, None, 'min', 1.00, format="%0.2f")
     _pb = st.number_input('Pb (psig)', 0.00, None, 'min', 1.00, format="%0.2f")
@@ -111,7 +110,7 @@ with row3_2:
     _id_casing_size = _id_casing_id = _id_tubing_size = _id_tubing_id = 0
     _casing_size = _casing_id = _tubing_size = _tubing_id = 0.00
     _casing_size_list = mcasingsize['casing_size'].unique().tolist() 
-    _casing_id_list = mcasingid['casing_id'].unique().tolist() 
+    
     _tubing_size_list = mtubingsize['tubing_size'].unique().tolist() 
     _tubing_id_list = mtubingid['tubing_id'].unique().tolist() 
     
@@ -121,27 +120,38 @@ with row3_2:
             
     st.header("Casing & Tubing", divider="gray")
     _casing_size = st.selectbox("Casing Size ", _casing_size_list)
-    _casing_id = st.selectbox("Casing ID ", _casing_id_list)
-    _tubing_size = st.selectbox("Tubing Size ", _tubing_size_list)
-    _tubing_id = st.selectbox("Tubing ID ", _tubing_id_list)
-    _tubing_coeff_type = st.selectbox("Tubing Coeffisien", _tubing_coeff_list)
-    st.write('\n')    
-
+    
+    # filtering casing id which is under casing size
     mycalc_temp = mcasingsize.loc[mcasingsize['casing_size']==_casing_size].reset_index(drop=True)
     _id_casing_size = mycalc_temp['id_casing_size'].values[0]
     
+    mycalc_temp = mcasingid.loc[mcasingid['id_casing_size']==_id_casing_size].reset_index(drop=True)
+    _casing_id_list = mycalc_temp['casing_id'].unique().tolist() 
+    
+    # filtering casing id which is under casing size using sql (--> gak bisa variable tapi antar field)
+    # -> error: _casing_id_list = ps.sqldf("select casid.casing_id from mcasingid casid where casid.id_casing_size = _id_casing_size")
+    
+    _casing_id = st.selectbox("Casing ID ", _casing_id_list)
     mycalc_temp = mcasingid.loc[mcasingid['casing_id']==_casing_id].reset_index(drop=True)
     _id_casing_id = mycalc_temp['id_casing_id'].values[0]
 
+    _tubing_size = st.selectbox("Tubing Size ", _tubing_size_list)
+    # filtering tubing id which is under tubing size
     mycalc_temp = mtubingsize.loc[mtubingsize['tubing_size']==_tubing_size].reset_index(drop=True)
     _id_tubing_size = mycalc_temp['id_tubing_size'].values[0]
     
+    mycalc_temp = mtubingid.loc[mtubingid['id_tubing_size']==_id_tubing_size].reset_index(drop=True)
+    _tubing_id_list = mycalc_temp['tubing_id'].unique().tolist() 
+
+    _tubing_id = st.selectbox("Tubing ID ", _tubing_id_list)
     mycalc_temp = mtubingid.loc[mtubingid['tubing_id']==_tubing_id].reset_index(drop=True)
     _id_tubing_id = mycalc_temp['id_tubing_id'].values[0]
     
+    _tubing_coeff_type = st.selectbox("Tubing Coeffisien", _tubing_coeff_list)
     mycalc_temp = mtubingcoeff.loc[mtubingcoeff['type']==_tubing_coeff_type].reset_index(drop=True)
     _id_tubing_coeff = mycalc_temp['id_tubing_coeff'].values[0]
     _coefficient = mycalc_temp['coefficient'].values[0]
+    st.write('\n')            
     
     st.header("Liner", divider="gray")
     _liner_id = _top_liner_at = _bottom_liner_at = 0
@@ -150,6 +160,56 @@ with row3_2:
     _bottom_liner_at = st.number_input(f'Bottom Liner at ({_measurement} MD)', 0.00, None, 'min', 1.00, format="%0.2f")
         
 if st.button("Save"):                   
+    #last_num = mnomor1.iloc[-1:]    
+    last_id_calc = mnomor1['tmycalc'].values[0]
+    new_id_calc = last_id_calc + 1    
+    
+    # change value of a single cell directly
+    mnomor1.at[0, 'tmycalc'] = new_id_calc
+    
+    # write out the CSV file 
+    mnomor1.to_csv("mnomor1.csv", index=False)
+ 
+    st.title("General Information")
+    col1, col2 = st.columns(2, gap="medium", vertical_alignment="top")
+    with col1:
+        st.subheader('ID Calculation:')
+        st.markdown(new_id_calc)
+        st.subheader('Well Name:')
+        st.markdown(_well_name)
+        st.subheader('Field Name:')
+        st.markdown(_field_name)
+        #st.write('\n')
+        st.subheader('Company:')
+        st.markdown(_company)
+        #st.write('\n')
+        st.subheader('User Name:')
+        st.markdown(_username)
+        #st.write('\n')
+        st.subheader('Engineer:')
+        st.markdown(_engineer)
+    with col2:
+        st.subheader('Date Calculation:')
+        st.markdown(_date_calc)
+        st.subheader('Instrument:')
+        st.markdown(_instrument)
+        #st.write('\n')
+        st.subheader('Calculation Method:')
+        st.markdown(_calc_method)
+        #st.write('\n')
+        st.subheader('Well Type:')
+        st.markdown(_welltype)
+        #st.write('\n')
+        st.subheader('Measurement:')
+        if _measurement=='m':
+            st.write('Meter (', _measurement, ')')
+        elif _measurement=='ft':
+            st.write('Feet (', _measurement, ')')
+        #st.write('\n')
+        st.subheader('Comment or Info:')
+        st.markdown(_comment_or_info)
+        #st.write('\n')
+
     #Hitung2an Calculation sblm IPR Curve
     _qmax = _qtest / (1 - 0.2 * (_fbhp/_sbhp) - 0.8 * (_fbhp/_sbhp) ** 2)
     # _Pwf_at_Qdes = (5 * math.sqrt(3.24 - 3.2 * (_qdes/_qmax)) - 1) / 8 * _sbhp --> library math susah diDeploy
@@ -408,22 +468,36 @@ if st.button("Save"):
     
        st.pyplot(fig)
     with row5_2:
-       st.dataframe(df_ipr_data, hide_index=True)
-
+       st.dataframe(df_ipr_data, hide_index=True)    
+       
+       new_records = [[new_id_calc, _user_id, _well_name, _field_name, _company, _engineer, _date_calc, \
+                         _id_instrument, _id_calc_method, _id_welltype, _id_measurement, _comment_or_info, \
+                         _top_perfo_tvd, _top_perfo_md, _bottom_perfo_tvd, _bottom_perfo_md, _qtest, _sbhp, _fbhp, \
+                         _producing_gor, _wc, _bht, _sgw, _sgg, _qdes, _psd, _whp, _psd_md, _p_casing, _pb, _cp, \
+                         _api, _sgo, _id_casing_size, _id_casing_id, _id_tubing_size, _id_tubing_id, _id_tubing_coeff, \
+                         _liner_id, _top_liner_at, _bottom_liner_at]]
+                           
+       with open('tmycalc.csv', mode='a', newline='') as f_object:
+           #writer_object = csv.writer(file)            
+           writer_object = writer(f_object)            
+           # Add new rows to the CSV
+           writer_object.writerows(new_records)                    
+           f_object.close() 
+           
     if st.button("Confirm"):      
-        last_rec = mycalc.iloc[-1:]    
-        last_id_calc = last_rec['id_calc'].values[0]
-        last_id_calc += 1    
-        new_records = [[last_id_calc, _user_id, _well_name, _field_name, _company, _engineer, _date_calc, \
-                        _id_instrument, _id_calc_method, _id_welltype, _id_measurement, _comment_or_info, \
-                        _top_perfo_tvd, _top_perfo_md, _bottom_perfo_tvd, _bottom_perfo_md, _qtest, _sbhp, _fbhp, \
-                        _producing_gor, _wc, _bht, _sgw, _sgg, _qdes, _psd, _whp, _psd_md, _p_casing, _pb, _cp, \
-                        _api, _sgo, _id_casing_size, _id_casing_id, _id_tubing_size, _id_tubing_id, _id_tubing_coeff, \
-                        _liner_id, _top_liner_at, _bottom_liner_at]]
+        st.write('')
+
+         # creating a list of column names 
+         #column_values = ['id_calc', 'user_id', 'well_name', 'field_name', 'company', 'engineer', 'date_calc', \
+         #                'id_instrument', 'id_calc_method', 'id_welltype', 'id_measurement', 'comment_or_info', \
+         #                'top_perfo_tvd', 'top_perfo_md', 'bottom_perfo_tvd', 'bottom_perfo_md', 'qtest', 'sbhp', 'fbhp', \
+         #                'producing_gor', 'wc', 'bht', 'sgw', 'sgg', 'qdes', 'psd', 'whp', 'psd_md', 'p_casing', 'pb', 'cp', \
+         #                'api', 'sgo', 'id_casing_size', 'id_casing_id', 'id_tubing_size', 'id_tubing_id', 'id_tubing_coeff', \
+         #                'liner_id', 'top_liner_at', 'bottom_liner_at']
+       
+         # add new record from list numpy to the dataframe 
+         #df_temp = pd.DataFrame(data = new_records,  
+         #                  columns = column_values) 
             
-        with open('mycalc.csv', mode='a', newline='') as f_object:
-            #writer_object = csv.writer(file)            
-            writer_object = writer(f_object)            
-            # Add new rows to the CSV
-            writer_object.writerows(new_records)                    
-            f_object.close()   
+        
+        
