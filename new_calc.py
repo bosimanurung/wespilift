@@ -461,13 +461,15 @@ if st.button("Save"):
     
        # set start 0 y axis
        plt.ylim(ymin=0)
+       plt.xlim(xmin=0)
     
        # set grid
        plt.grid(color='darkgray', linestyle=':', linewidth=0.5)
     
        st.pyplot(fig)
+        
     with row5_2:
-       st.dataframe(df_ipr_data, hide_index=True)    
+       #st.dataframe(df_ipr_data, hide_index=True)    
        
        new_records = [[new_id_calc, _user_id, _well_name, _field_name, _company, _engineer, _date_calc, \
                          _id_instrument, _id_calc_method, _id_welltype, _id_measurement, _comment_or_info, \
