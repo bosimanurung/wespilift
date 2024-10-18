@@ -463,6 +463,7 @@ if st.button("Save"):
         
            # set start 0 y axis
            plt.ylim(ymin=0)
+           plt.xlim(xmin=0)
         
            # set grid
            plt.grid(color='darkgray', linestyle=':', linewidth=0.5)
