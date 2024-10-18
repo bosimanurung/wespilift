@@ -337,7 +337,7 @@ if id_calc_01:
         _sgfluid = (_wc/100) * _sgw + (1-(_wc/100)) * _sgo
         st.write('SG Fluid     : ', _sgfluid) #, '(selisih/beda 0.001 lbh kecil)')
         #st.write('Di file xls: 1.004')
-        st.write('\n')
+        #st.write('\n')
                 
         _pip = round(_pip, 2)
         st.write('PIP          : ', _pip, 'psi')
