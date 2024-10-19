@@ -1,7 +1,11 @@
 import streamlit as st
 
 
-st.set_page_config(layout="wide")
+st.set_page_config(
+    layout="wide",
+    page_title="Wespilift",
+    page_icon="logo_wespi.png",
+)
 
 st.sidebar.text('Powered by: ')
 st.sidebar.image('logo_wespi.png')
