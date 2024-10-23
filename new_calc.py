@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from csv import writer
 
 #open datas
-mnomor1 = pd.read_csv('MNomor1.csv')
+mnomor1 = pd.read_csv('mnomor1.csv')
 tmycalc = pd.read_csv('tmycalc.csv')
 muserlogin = pd.read_csv('MUserLogin.csv')
 minstrument = pd.read_csv('MInstrument.csv')
@@ -210,7 +210,7 @@ if st.button("Save"):
         st.markdown(_comment_or_info)
         #st.write('\n')
 
-    if _id_calc_method==2: #Vogel        
+    if _id_instrument==1 and _id_calc_method==2: #Downhole Sensor & Vogel         
         #Hitung2an Calculation sblm IPR Curve
         _qmax = _qtest / (1 - 0.2 * (_fbhp/_sbhp) - 0.8 * (_fbhp/_sbhp) ** 2)
         # _Pwf_at_Qdes = (5 * math.sqrt(3.24 - 3.2 * (_qdes/_qmax)) - 1) / 8 * _sbhp --> library math susah diDeploy
@@ -442,47 +442,47 @@ if st.button("Save"):
            st.write('\n')
            
         st.title("Inflow Performance Relationships")    
-        row5_1, row5_spacer2, row5_2= st.columns((11.1, .1, 3.8))
-        with row5_1:
-           # perbesar figsize
-           #plt.figure(figsize=(20,10))
-           plt.figure(figsize=(10,5))
+        #row5_1, row5_spacer2, row5_2= st.columns((11.1, .1, 3.8))
+        #with row5_1:
+        # perbesar figsize
+        #plt.figure(figsize=(20,10))
+        plt.figure(figsize=(10,5))
+     
+        fig, ax  = plt.subplots()
+     
+        # membuat line plot
+        plt.plot(df_ipr_data['Flow rate'], df_ipr_data['Pressure'], 'or:')
+     
+        # set title & label
+        plt.xlabel('Flow rate, Q (BFPD)',fontsize=13,color='darkred')
+        plt.ylabel('Pressure (psi)',fontsize=13,color='darkred')
+     
+        # custom line
+        plot_line = plt.plot(df_ipr_data['Flow rate'], df_ipr_data['Pressure'])
+        plt.setp(plot_line, color='red', linestyle=':',  linewidth=0.1, marker='o')
+     
+        # set start 0 y axis
+        plt.ylim(ymin=0)
+        plt.xlim(xmin=0)
         
-           fig, ax  = plt.subplots()
-        
-           # membuat line plot
-           plt.plot(df_ipr_data['Flow rate'], df_ipr_data['Pressure'])
-        
-           # set title & label
-           plt.xlabel('Flow rate, Q (BFPD)',fontsize=13,color='darkred')
-           plt.ylabel('Pressure (psi)',fontsize=13,color='darkred')
-        
-           # custom line
-           plot_line = plt.plot(df_ipr_data['Flow rate'], df_ipr_data['Pressure'])
-           plt.setp(plot_line, color='blue', linestyle='-',  linewidth=0.5, marker='o')
-        
-           # set start 0 y axis
-           plt.ylim(ymin=0)
-           plt.xlim(xmin=0)
-        
-           # set grid
-           plt.grid(color='darkgray', linestyle=':', linewidth=0.5)
-        
-           st.pyplot(fig)
-        with row5_2:
-           #st.dataframe(df_ipr_data, hide_index=True)               
-           new_records = [[new_id_calc, _user_id, _well_name, _field_name, _company, _engineer, _date_calc, \
-                             _id_instrument, _id_calc_method, _id_welltype, _id_measurement, _comment_or_info, \
-                             _top_perfo_tvd, _top_perfo_md, _bottom_perfo_tvd, _bottom_perfo_md, _qtest, _sbhp, _fbhp, \
-                             _producing_gor, _wc, _bht, _sgw, _sgg, _qdes, _psd, _whp, _psd_md, _p_casing, _pb, _cp, \
-                             _api, _sgo, _id_casing_size, _id_casing_id, _id_tubing_size, _id_tubing_id, _id_tubing_coeff, \
-                             _liner_id, _top_liner_at, _bottom_liner_at]]                               
-           with open('tmycalc.csv', mode='a', newline='') as f_object:
-               #writer_object = csv.writer(file)            
-               writer_object = writer(f_object)            
-               # Add new rows to the CSV
-               writer_object.writerows(new_records)                    
-               f_object.close() 
+        # set grid
+        plt.grid(color='darkgray', linestyle=':', linewidth=0.5)
+     
+        st.pyplot(fig)
+        #with row5_2:
+        #st.dataframe(df_ipr_data, hide_index=True)               
+        new_records = [[new_id_calc, _user_id, _well_name, _field_name, _company, _engineer, _date_calc, \
+                          _id_instrument, _id_calc_method, _id_welltype, _id_measurement, _comment_or_info, \
+                          _top_perfo_tvd, _top_perfo_md, _bottom_perfo_tvd, _bottom_perfo_md, _qtest, _sbhp, _fbhp, \
+                          _producing_gor, _wc, _bht, _sgw, _sgg, _qdes, _psd, _whp, _psd_md, _p_casing, _pb, _cp, \
+                          _api, _sgo, _id_casing_size, _id_casing_id, _id_tubing_size, _id_tubing_id, _id_tubing_coeff, \
+                          _liner_id, _top_liner_at, _bottom_liner_at]]                               
+        with open('tmycalc.csv', mode='a', newline='') as f_object:
+            #writer_object = csv.writer(file)            
+            writer_object = writer(f_object)            
+            # Add new rows to the CSV
+            writer_object.writerows(new_records)                    
+            f_object.close() 
                
         if st.button("Confirm"):      
             st.write('')
@@ -498,8 +498,8 @@ if st.button("Save"):
              # add new record from list numpy to the dataframe 
              #df_temp = pd.DataFrame(data = new_records,  
              #                  columns = column_values) 
-                
-    elif _id_calc_method==1: #Straight Line
+
+    elif _id_instrument==1 and _id_calc_method==1: #Downhole Sensor & Straight Line
         #Hitung2an Calculation sblm IPR Curve
         _pi = _qtest / (_sbhp - _fbhp)
         # _Pwf_at_Qdes = (5 * math.sqrt(3.24 - 3.2 * (_qdes/_qmax)) - 1) / 8 * _sbhp --> library math susah diDeploy
@@ -699,47 +699,47 @@ if st.button("Save"):
     
         st.write('\n')
         st.title("Inflow Performance Relationships")    
-        row5_1, row5_spacer2, row5_2= st.columns((11.1, .1, 3.8))
-        with row5_1:
-            # perbesar figsize
-            #plt.figure(figsize=(20,10))
-            plt.figure(figsize=(10,5))
-    
-            fig, ax  = plt.subplots()
-    
-            # membuat line plot
-            plt.plot(df_ipr_data['Flow rate'], df_ipr_data['Pressure'])
-    
-            # set title & label
-            plt.xlabel('Flow rate, Q (BFPD)',fontsize=13,color='darkred')
-            plt.ylabel('Pressure (psi)',fontsize=13,color='darkred')
-    
-            # custom line
-            plot_line = plt.plot(df_ipr_data['Flow rate'], df_ipr_data['Pressure'])
-            plt.setp(plot_line, color='blue', linestyle='-',  linewidth=0.5, marker='o')
-    
-            # set start 0 y axis
-            plt.ylim(ymin=0)
-            plt.xlim(xmin=0)
-    
-            # set grid
-            plt.grid(color='darkgray', linestyle=':', linewidth=0.5)
-    
-            st.pyplot(fig)
-        with row5_2:            
-            #st.dataframe(df_ipr_data, hide_index=True)                  
-            new_records = [[new_id_calc, _user_id, _well_name, _field_name, _company, _engineer, _date_calc, \
-                             _id_instrument, _id_calc_method, _id_welltype, _id_measurement, _comment_or_info, \
-                             _top_perfo_tvd, _top_perfo_md, _bottom_perfo_tvd, _bottom_perfo_md, _qtest, _sbhp, _fbhp, \
-                             _producing_gor, _wc, _bht, _sgw, _sgg, _qdes, _psd, _whp, _psd_md, _p_casing, _pb, _cp, \
-                             _api, _sgo, _id_casing_size, _id_casing_id, _id_tubing_size, _id_tubing_id, _id_tubing_coeff, \
-                             _liner_id, _top_liner_at, _bottom_liner_at]]                               
-            with open('tmycalc.csv', mode='a', newline='') as f_object:
-                #writer_object = csv.writer(file)            
-                writer_object = writer(f_object)            
-                # Add new rows to the CSV
-                writer_object.writerows(new_records)                    
-                f_object.close() 
+        #row5_1, row5_spacer2, row5_2= st.columns((11.1, .1, 3.8))
+        #with row5_1:
+        # perbesar figsize
+        #plt.figure(figsize=(20,10))
+        plt.figure(figsize=(10,5))
+
+        fig, ax  = plt.subplots()
+
+        # membuat line plot
+        plt.plot(df_ipr_data['Flow rate'], df_ipr_data['Pressure'], 'or:')
+
+        # set title & label
+        plt.xlabel('Flow rate, Q (BFPD)',fontsize=13,color='darkred')
+        plt.ylabel('Pressure (psi)',fontsize=13,color='darkred')
+
+        # custom line
+        plot_line = plt.plot(df_ipr_data['Flow rate'], df_ipr_data['Pressure'])
+        plt.setp(plot_line, color='red', linestyle=':',  linewidth=0.1, marker='o')
+
+        # set start 0 y axis
+        plt.ylim(ymin=0)
+        plt.xlim(xmin=0)
+
+        # set grid
+        plt.grid(color='darkgray', linestyle=':', linewidth=0.5)
+
+        st.pyplot(fig)
+        #with row5_2:            
+        #st.dataframe(df_ipr_data, hide_index=True)                  
+        new_records = [[new_id_calc, _user_id, _well_name, _field_name, _company, _engineer, _date_calc, \
+                         _id_instrument, _id_calc_method, _id_welltype, _id_measurement, _comment_or_info, \
+                         _top_perfo_tvd, _top_perfo_md, _bottom_perfo_tvd, _bottom_perfo_md, _qtest, _sbhp, _fbhp, \
+                         _producing_gor, _wc, _bht, _sgw, _sgg, _qdes, _psd, _whp, _psd_md, _p_casing, _pb, _cp, \
+                         _api, _sgo, _id_casing_size, _id_casing_id, _id_tubing_size, _id_tubing_id, _id_tubing_coeff, \
+                         _liner_id, _top_liner_at, _bottom_liner_at]]                               
+        with open('tmycalc.csv', mode='a', newline='') as f_object:
+            #writer_object = csv.writer(file)            
+            writer_object = writer(f_object)            
+            # Add new rows to the CSV
+            writer_object.writerows(new_records)                    
+            f_object.close() 
                
         if st.button("Confirm"):      
             st.write('')
