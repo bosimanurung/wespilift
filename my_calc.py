@@ -60,11 +60,13 @@ if id_calc_01:
 
     _username = mycalc4['username'].values[0]; _well_name = mycalc4['well_name'].values[0]
     _field_name=mycalc4['field_name'].values[0]; _company=mycalc4['company'].values[0]; _engineer=mycalc4['engineer'].values[0]
-    _date_calc=mycalc4['date_calc'].values[0]; _instrument=mycalc4['instrument'].values[0]
+    _date_calc=mycalc4['date_calc'].values[0]
+    _instrument=mycalc4['instrument'].values[0]; _id_instrument=mycalc4['id_instrument'].values[0]
     _calc_method=mycalc4['calc_method'].values[0]; _welltype=mycalc4['welltype'].values[0]
     _id_calc_method=mycalc4['id_calc_method'].values[0]
     _measurement=mycalc4['measurement'].values[0]; _comment_or_info=mycalc4['comment_or_info'].values[0]
     
+    #st.write('id instrument=', _id_instrument, 'id calc methon=', _id_calc_method)
     st.title("General Information")
     col1, col2 = st.columns(2, gap="medium", vertical_alignment="top")
     with col1:
@@ -166,7 +168,7 @@ if id_calc_01:
         st.write('Top Liner at : ', _top_liner_at, _measurement, 'TVD')
         st.write('Bottom Liner at: ', _bottom_liner_at, _measurement, 'MD')
 
-    if _id_calc_method==2: #Vogel    
+    if _id_instrument==1 and _id_calc_method==2: #Downhole Sensor & Vogel    
         #Hitung2an Calculation sblm IPR Curve
         _qmax = _qtest / (1 - 0.2 * (_fbhp/_sbhp) - 0.8 * (_fbhp/_sbhp) ** 2)
         # _Pwf_at_Qdes = (5 * math.sqrt(3.24 - 3.2 * (_qdes/_qmax)) - 1) / 8 * _sbhp --> library math susah diDeploy
@@ -399,38 +401,41 @@ if id_calc_01:
     
         st.write('\n')
         st.title("Inflow Performance Relationships")    
-        row5_1, row5_spacer2, row5_2= st.columns((11.1, .1, 3.8))
-        with row5_1:
-            # perbesar figsize
-            #plt.figure(figsize=(20,10))
-            plt.figure(figsize=(10,5))
+        #row5_1, row5_spacer2, row5_2= st.columns((11.1, .1, 3.8))
+        #with row5_1:
+        # perbesar figsize
+        #plt.figure(figsize=(20,10))
+        #plt.figure(figsize=(10,5))
+        plt.figure(figsize=(5,2))
+
+        fig, ax  = plt.subplots()
+
+        # membuat line plot
+        plt.plot(df_ipr_data['Flow rate'], df_ipr_data['Pressure'], 'or:')
+
+        # set title & label
+        plt.xlabel('Flow rate, Q (BFPD)',fontsize=13,color='darkred')
+        plt.ylabel('Pressure (psi)',fontsize=13,color='darkred')
+
+        # custom line
+        plot_line = plt.plot(df_ipr_data['Flow rate'], df_ipr_data['Pressure'])
+        #plt.setp(plot_line, color='blue', linestyle='-',  linewidth=0.5, marker='o•')
+        plt.setp(plot_line, color='red', linestyle='-',  linewidth=0.1, marker='o') 
+
+        # set start 0 y axis
+        plt.ylim(ymin=0)
+        plt.xlim(xmin=0)
+
+        # set grid
+        #plt.grid(color='darkgray', linestyle=':', linewidth=0.5)
+        plt.grid(color='darkgray', linestyle=':', linewidth=0.3)
+
+        st.pyplot(fig)
+    #with row5_2:
+    #    st.dataframe(df_ipr_data, hide_index=True)
+    #    st.write('')
     
-            fig, ax  = plt.subplots()
-    
-            # membuat line plot
-            plt.plot(df_ipr_data['Flow rate'], df_ipr_data['Pressure'])
-    
-            # set title & label
-            plt.xlabel('Flow rate, Q (BFPD)',fontsize=13,color='darkred')
-            plt.ylabel('Pressure (psi)',fontsize=13,color='darkred')
-    
-            # custom line
-            plot_line = plt.plot(df_ipr_data['Flow rate'], df_ipr_data['Pressure'])
-            plt.setp(plot_line, color='blue', linestyle='-',  linewidth=0.5, marker='o')
-    
-            # set start 0 y axis
-            plt.ylim(ymin=0)
-            plt.xlim(xmin=0)
-    
-            # set grid
-            plt.grid(color='darkgray', linestyle=':', linewidth=0.5)
-    
-            st.pyplot(fig)
-        with row5_2:
-            #st.dataframe(df_ipr_data, hide_index=True)
-            st.write('')
-            
-    elif _id_calc_method==1: #Straight Line
+    elif _id_instrument==1 and _id_calc_method==1: #Downhole Sensor & Straight Line
         #Hitung2an Calculation sblm IPR Curve
         _pi = _qtest / (_sbhp - _fbhp)
         # _Pwf_at_Qdes = (5 * math.sqrt(3.24 - 3.2 * (_qdes/_qmax)) - 1) / 8 * _sbhp --> library math susah diDeploy
@@ -630,33 +635,33 @@ if id_calc_01:
     
         st.write('\n')
         st.title("Inflow Performance Relationships")    
-        row5_1, row5_spacer2, row5_2= st.columns((11.1, .1, 3.8))
-        with row5_1:
-            # perbesar figsize
-            #plt.figure(figsize=(20,10))
-            plt.figure(figsize=(10,5))
-    
-            fig, ax  = plt.subplots()
-    
-            # membuat line plot
-            plt.plot(df_ipr_data['Flow rate'], df_ipr_data['Pressure'])
-    
-            # set title & label
-            plt.xlabel('Flow rate, Q (BFPD)',fontsize=13,color='darkred')
-            plt.ylabel('Pressure (psi)',fontsize=13,color='darkred')
-    
-            # custom line
-            plot_line = plt.plot(df_ipr_data['Flow rate'], df_ipr_data['Pressure'])
-            plt.setp(plot_line, color='blue', linestyle='-',  linewidth=0.5, marker='o')
-    
-            # set start 0 y axis
-            plt.ylim(ymin=0)
-            plt.xlim(xmin=0)
-    
-            # set grid
-            plt.grid(color='darkgray', linestyle=':', linewidth=0.5)
-    
-            st.pyplot(fig)
-        with row5_2:
-            #st.dataframe(df_ipr_data, hide_index=True)        
-            st.write('')
+        #row5_1, row5_spacer2, row5_2= st.columns((11.1, .1, 3.8))
+        #with row5_1:
+        # perbesar figsize
+        #plt.figure(figsize=(20,10))
+        plt.figure(figsize=(8,3))
+
+        fig, ax  = plt.subplots()
+
+        # membuat line plot
+        plt.plot(df_ipr_data['Flow rate'], df_ipr_data['Pressure'], 'or:')
+
+        # set title & label
+        plt.xlabel('Flow rate, Q (BFPD)',fontsize=13,color='darkred')
+        plt.ylabel('Pressure (psi)',fontsize=13,color='darkred')
+
+        # custom line
+        plot_line = plt.plot(df_ipr_data['Flow rate'], df_ipr_data['Pressure'])
+        plt.setp(plot_line, color='red', linestyle=':',  linewidth=0.1, marker='o')
+
+        # set start 0 y axis
+        plt.ylim(ymin=0)
+        plt.xlim(xmin=0)
+
+        # set grid
+        plt.grid(color='darkgray', linestyle=':', linewidth=0.5)
+
+        st.pyplot(fig)
+        #with row5_2:
+        #    st.dataframe(df_ipr_data, hide_index=True)        
+        #    st.write('')
