@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import pandasql as ps
 import matplotlib.pyplot as plt
 from csv import writer
 
@@ -13,7 +12,6 @@ mcalcmethod = pd.read_csv('MCalcMethod.csv')
 mwelltype = pd.read_csv('MWellType.csv')
 mmeasurement = pd.read_csv('MMeasurement.csv')
 mcasingsize = pd.read_csv('MCasingSize.csv')
-mcasingid = pd.read_csv('MCasingID.csv')
 mtubingsize = pd.read_csv('MTubingSize.csv')
 mtubingid = pd.read_csv('MTubingID.csv')
 mtubingcoeff = pd.read_csv('MTubingCoeff.csv')
@@ -22,6 +20,21 @@ df_temp = pd.DataFrame()
 st.title("Add New Calculation")
 new_records = []
 
+if "api" not in st.session_state:
+    st.session_state["api"] = 0.00
+    
+if "sgo" not in st.session_state:
+    st.session_state.sgo = 0.00
+    
+if "_id_tubing_coeff" not in st.session_state:
+    st.session_state["_id_tubing_coeff"] = 0
+    
+if "_tubing_coeff_type" not in st.session_state:
+    st.session_state._tubing_coeff_type = ''
+    
+if "_coefficient" not in st.session_state:
+    st.session_state._coefficient = 0
+   
 col1, col2 = st.columns(2, gap="medium", vertical_alignment="top")
 with col1:
     _well_name = ''; _field_name = ''; _company = ''; _engineer = ''
@@ -90,7 +103,7 @@ with row3_1:
 
 with row3_2:
     _p_casing = _pb = cp = 0.01
-    _api = _sgo = 0.01
+    _api = _sgo = _api1 = _sgo1 = 0.00
 
     st.header("Basic Data (Optional)", divider="gray")
     _p_casing = st.number_input('P. Casing (psi)', 0.00, None, 'min', 1.00, format="%0.2f")
@@ -98,43 +111,50 @@ with row3_2:
     _cp = st.number_input('CP (psi)', 0.00, None, 'min', 1.00, format="%0.2f")
     
     st.header("API/Sgo", divider="gray")
-    _api = st.number_input('API', 0.00, None, 'min', 1.00, format="%0.2f")
-    if _api > 0:
-        _sgo = 141.5/(131.5 + _api)
+    def api_to_sgo():
+        st.session_state.sgo = 141.5/(131.5 + st.session_state.api)
+        st.session_state.sgo = round(st.session_state.sgo, 4)
+        #_sgo = 141.5/(131.5 + _api)
+
+    def sgo_to_api():
+        st.session_state.api = 141.5/st.session_state.sgo - 131.5
+        st.session_state.api = round(st.session_state.api, 4) 
+        #_api = 141.5/_sgo - 131.5    
         
-    _sgo = st.number_input('Sgo', _sgo, None, 'min', 1.00, format="%0.2f")
-    if _sgo > 0:
-        _api = 141.5/_sgo - 131.5    
-    st.write('\n')
-
+    # ------------- now how callback work ---------------
+    col1, buff, col2 = st.columns([2,1,2])
+    with col1:
+        _api = st.number_input('API', _api, None, 'min', 1.00, format="%0.2f", 
+                               key="api", on_change=api_to_sgo)
+        
+    with col2:
+        _sgo = st.number_input('Sgo', _sgo, None, 'min', 1.00, format="%0.2f", 
+                               key="sgo", on_change=sgo_to_api)    
+    
     _id_casing_size = _id_casing_id = _id_tubing_size = _id_tubing_id = 0
-    _casing_size = _casing_id = _tubing_size = _tubing_id = 0.00
-    _casing_size_list = mcasingsize['casing_size'].unique().tolist() 
-    
-    _tubing_size_list = mtubingsize['tubing_size'].unique().tolist() 
-    _tubing_id_list = mtubingid['tubing_id'].unique().tolist() 
-    
-    _id_tubing_coeff = 0; _tubing_coeff_type = ''
-    _coefficient = 0
-    _tubing_coeff_list = mtubingcoeff['type'].unique().tolist() 
-            
-    st.header("Casing & Tubing", divider="gray")
-    _casing_size = st.selectbox("Casing Size ", _casing_size_list)
-    
-    # filtering casing id which is under casing size
-    mycalc_temp = mcasingsize.loc[mcasingsize['casing_size']==_casing_size].reset_index(drop=True)
-    _id_casing_size = mycalc_temp['id_casing_size'].values[0]
-    
-    mycalc_temp = mcasingid.loc[mcasingid['id_casing_size']==_id_casing_size].reset_index(drop=True)
-    _casing_id_list = mycalc_temp['casing_id'].unique().tolist() 
-    
-    # filtering casing id which is under casing size using sql (--> gak bisa variable tapi antar field)
-    # -> error: _casing_id_list = ps.sqldf("select casid.casing_id from mcasingid casid where casid.id_casing_size = _id_casing_size")
-    
-    _casing_id = st.selectbox("Casing ID ", _casing_id_list)
-    mycalc_temp = mcasingid.loc[mcasingid['casing_id']==_casing_id].reset_index(drop=True)
-    _id_casing_id = mycalc_temp['id_casing_id'].values[0]
+    _casing_size = ''; _casing_id = _tubing_size = _tubing_id = 0.00
+    _casing_size_list = mcasingsize['casing_size'].unique().tolist()     
+    _casing_id_list = mcasingsize['casing_drift_id'].unique().tolist() # casing id berarti caslng drift id
+    #Using list comprehension to change list of numbers to list of string
+    string_casing_id_list = [str(x) for x in _casing_id_list] # -> now means casing drift id
+    df_casing_size = pd.DataFrame({
+        'Size': _casing_size_list,
+        'Drift ID': string_casing_id_list})    
+    df_casing_size['Combined'] = df_casing_size['Size'] + ' - ' + df_casing_size['Drift ID']
+    #st.dataframe(df_casing_size)   
 
+    st.header("Casing & Tubing", divider="gray")
+    _casing_size = st.selectbox("Casing Size & Casing Drift ID (inch)", df_casing_size['Combined'], 1)
+    indexrow = df_casing_size.loc[df_casing_size['Combined']==_casing_size].index[0]
+    _id_casing_size = indexrow + 1 # -> ditambah 1 krn index df_casing_size dimulai dari 0
+    therecord = mcasingsize.loc[mcasingsize['id_casing_size']==_id_casing_size].reset_index(drop=True)
+    _casing_size = therecord['casing_size'].values[0]
+    _casing_id = therecord['casing_drift_id'].values[0]
+    #st.write("casing size:", _casing_size) --> sdh benar
+    #st.write("casing drift id:", _casing_id) --> sdh benar
+
+    _tubing_size_list = mtubingsize['tubing_size'].unique().tolist() 
+    _tubing_id_list = mtubingid['tubing_id'].unique().tolist()  
     _tubing_size = st.selectbox("Tubing Size ", _tubing_size_list)
     # filtering tubing id which is under tubing size
     mycalc_temp = mtubingsize.loc[mtubingsize['tubing_size']==_tubing_size].reset_index(drop=True)
@@ -143,14 +163,28 @@ with row3_2:
     mycalc_temp = mtubingid.loc[mtubingid['id_tubing_size']==_id_tubing_size].reset_index(drop=True)
     _tubing_id_list = mycalc_temp['tubing_id'].unique().tolist() 
 
-    _tubing_id = st.selectbox("Tubing ID ", _tubing_id_list)
-    mycalc_temp = mtubingid.loc[mtubingid['tubing_id']==_tubing_id].reset_index(drop=True)
+    _tubing_id = st.selectbox("Tubing ID (inch)", _tubing_id_list)
+    mycalc_temp = mtubingid.loc[mtubingid['tubing_id']==_tubing_id] .reset_index(drop=True)
     _id_tubing_id = mycalc_temp['id_tubing_id'].values[0]
-    
-    _tubing_coeff_type = st.selectbox("Tubing Coeffisien", _tubing_coeff_list)
-    mycalc_temp = mtubingcoeff.loc[mtubingcoeff['type']==_tubing_coeff_type].reset_index(drop=True)
-    _id_tubing_coeff = mycalc_temp['id_tubing_coeff'].values[0]
-    _coefficient = mycalc_temp['coefficient'].values[0]
+
+    _id_tubing_coeff_list = mtubingcoeff['id_tubing_coeff'].unique().tolist()         
+    _tubing_coeff_list = mtubingcoeff['type'].unique().tolist()     
+    _coefficient_list = mtubingcoeff['coefficient'].unique().tolist()   
+    #Using list comprehension to change list of numbers to list of string
+    string_coefficient_list = [str(x) for x in _coefficient_list] # -> now means casing drift id
+    df_tubing_coeff_type = pd.DataFrame({
+        'ID': _id_tubing_coeff_list,
+        'Type': _tubing_coeff_list,
+        'Coefficient': string_coefficient_list})    
+    df_tubing_coeff_type['Combined'] = df_tubing_coeff_type['Type'] + ' - ' + df_tubing_coeff_type['Coefficient']
+    _tubing_coeff_type = st.selectbox("Tubing Coeffisien Type & Coefficient", df_tubing_coeff_type['Combined'], 1)
+
+    indexrow = df_tubing_coeff_type.loc[df_tubing_coeff_type['Combined']==_tubing_coeff_type].index[0]
+    st.session_state._id_tubing_coeff_type = indexrow + 1 # -> ditambah 1 krn index df_casing_size dimulai dari 0
+    therecord = mtubingcoeff.loc[mtubingcoeff['id_tubing_coeff']==st.session_state._id_tubing_coeff_type].reset_index(drop=True)
+    st.session_state._id_tubing_coeff = therecord['id_tubing_coeff'].values[0]
+    st.session_state._tubing_coeff_type = therecord['type'].values[0]
+    st.session_state._coefficient = therecord['coefficient'].values[0]
     st.write('\n')            
     
     st.header("Liner", divider="gray")
@@ -237,11 +271,13 @@ if st.button("Save"):
         _pip = _Pwf_at_Qdes - ((_MidPerf - _psd) * (_sgfluid/2.31)) 
         
         # Rs=Sgg*(( (PIP/18) * (10^(0.0125*API – 0.00091*BHT)) )^1.2048)
-        _Rs=_sgg*(( (_pip/18) * (10**(0.0125*_api - 0.00091*_bht)) )**1.2048)
+        #_Rs=_sgg*(( (_pip/18) * (10**(0.0125*_api - 0.00091*_bht)) )**1.2048)
+        _Rs=_sgg*(( (_pip/18) * (10**(0.0125*st.session_state.api - 0.00091*_bht)) )**1.2048)
         
         # Bo=0.972+0.000147*((Rs*SQRT(SGg/Sgo)+1.25*BHT)^1.175); 
         # _Bo = 0.972+0.000147*((_Rs*math.sqrt(_sgg/_sgo)+1.25*_bht)**1.175) --> math masalah diDeploy
-        _Bo = 0.972+0.000147*((_Rs * (_sgg/_sgo)**0.5 + 1.25 * _bht) ** 1.175)
+        #_Bo = 0.972+0.000147*((_Rs * (_sgg/_sgo)**0.5 + 1.25 * _bht) ** 1.175)
+        _Bo = 0.972+0.000147*((_Rs * (_sgg/st.session_state.sgo)**0.5 + 1.25 * _bht) ** 1.175)
         # Vo=(1-WC)*Qdes*Bo;
         _Vo = (1-(_wc/100))*_qdes*_Bo;
         
@@ -277,7 +313,8 @@ if st.button("Save"):
             _p_casing_hitung = (_p_casing * 2.31 / _sgfluid) / 3.28084 # -> utk jadi meter
         
         # Friction Loss = (2.083*(100/TubingCoeff)^1.85*(Qdes         /34.3)^1.85/TubingID^4.8655)  *PSDft/1000
-        _friction_loss = (2.083*(100/_coefficient)**1.85*(_qdes/34.3)**1.85/_tubing_id**4.8655)*_psd/1000
+        #_friction_loss = (2.083*(100/_coefficient)**1.85*(_qdes/34.3)**1.85/_tubing_id**4.8655)*_psd/1000
+        _friction_loss = (2.083*(100/st.session_state._coefficient)**1.85*(_qdes/34.3)**1.85/_tubing_id**4.8655)*_psd/1000
         
         # % Free Gas = Vg / Vt
         _persen_free_gas = (_Vg / _Vt) * 100
@@ -341,63 +378,63 @@ if st.button("Save"):
         st.title("Calculation")
         col1, col2 = st.columns(2, gap="medium", vertical_alignment="top")
         with col1:
-           _Pwf_at_Qdes = round(_Pwf_at_Qdes, 2) # jadi 786.7571 yg sblmnya 786.757076405096
+           _Pwf_at_Qdes = round(_Pwf_at_Qdes, 4) # jadi 786.7571 yg sblmnya 786.757076405096
            _composite_sg = round(_composite_sg, 2) # sblmnya 0.490559258022
            st.write("Pwf@Qdes: ", _Pwf_at_Qdes, 'psi')
            st.write('Qdes         : ', _qdes, 'BPD')
-           st.write('Composite SG : ', _composite_sg, '(selisih/beda 0.0003 lbh kecil)')
-           st.write('Di file xls: 0.490859')
-           st.write('\n')
+           st.write('Composite SG : ', _composite_sg) #, '(selisih/beda 0.0003 lbh kecil)')
+           #st.write('Di file xls: 0.490859')
+           #st.write('\n')
         
            _wfl = round(_wfl, 2) # sblmnya 4743.3883109093
            st.write('PSD          : ', _psd, _measurement, 'TVD')
            st.write('WFL          : ', _wfl, _measurement, 'TVD')
-           st.write('Di file xls: 4744.936')
-           st.write('Hitung2an:')
-           st.write('WFL = PSD - (PIP * 2.31 / SGFluid)')
-           st.write('=', _psd, '- ((', _pip, '* 2.31) /', _sgfluid)
-           st.write('=', _psd, '-', (_pip * 2.31), '/', _sgfluid)
-           st.write('=', _psd, '-', (_pip * 2.31) / _sgfluid)
-           st.write('=', round(_psd - (_pip * 2.31) / _sgfluid, 2), '(selisih/beda 1.6 lbh kecil)')
-           st.write('\n')
+           #st.write('Di file xls: 4744.936')
+           #st.write('Hitung2an:')
+           #st.write('WFL = PSD - (PIP * 2.31 / SGFluid)')
+           #st.write('=', _psd, '- ((', _pip, '* 2.31) /', _sgfluid)
+           #st.write('=', _psd, '-', (_pip * 2.31), '/', _sgfluid)
+           #st.write('=', _psd, '-', (_pip * 2.31) / _sgfluid)
+           #st.write('=', round(_psd - (_pip * 2.31) / _sgfluid, 2), '(selisih/beda 1.6 lbh kecil)')
+           #st.write('\n')
            
            _qmax = round(_qmax, 2)
            _whp_hitung = round(_whp_hitung, 2)
            st.write('Qmax         : ', _qmax, 'BPD')
            st.write('WHP          : ', _whp_hitung, _measurement, 'TVD')
-           st.write('Di file xls: 345.0997')
-           st.write('Hitung2an WHP:')
-           st.write('WHP = THP * 2.31 / SGFluid')
-           st.write('= (', _whp, '* 2.31) /', _sgfluid)
-           st.write('=', _whp * 2.31, '/', _sgfluid)
-           st.write('=', round((_whp * 2.31) / _sgfluid, 2), '(selisih/beda 0.3 lbh besar)')
-           st.write('\n')
+           #st.write('Di file xls: 345.0997')
+           #st.write('Hitung2an WHP:')
+           #st.write('WHP = THP * 2.31 / SGFluid')
+           #st.write('= (', _whp, '* 2.31) /', _sgfluid)
+           #st.write('=', _whp * 2.31, '/', _sgfluid)
+           #st.write('=', round((_whp * 2.31) / _sgfluid, 2), '(selisih/beda 0.3 lbh besar)')
+           #st.write('\n')
         
            _sgfluid = round(_sgfluid, 2)
-           st.write('SG Fluid = WC * SGw + (1 - WC) * Sgo')
-           st.write('= (', _wc, '/100) * ', _sgw, '+ (1 - (',  _wc, '/100)) * ', _sgo)
-           st.write('= ', _wc/100,' * ', _sgw, '+ (1 - ', _wc/100, ') * ', _sgo)
-           st.write('= ', _wc/100,' * ', _sgw, '+ ', 1 - (_wc/100), ' * ', _sgo)
-           st.write('= ', (_wc/100) * _sgw, '+ ', (1 - (_wc/100)) * _sgo)
-           _sgfluid = (_wc/100) * _sgw + (1-(_wc/100)) * _sgo
-           st.write('SG Fluid     : ', _sgfluid, '(selisih/beda 0.001 lbh kecil)')
-           st.write('Di file xls: 1.004')
-           st.write('\n')
+           #st.write('SG Fluid = WC * SGw + (1 - WC) * Sgo')
+           #st.write('= (', _wc, '/100) * ', _sgw, '+ (1 - (',  _wc, '/100)) * ', _sgo)
+           #st.write('= ', _wc/100,' * ', _sgw, '+ (1 - ', _wc/100, ') * ', _sgo)
+           #st.write('= ', _wc/100,' * ', _sgw, '+ ', 1 - (_wc/100), ' * ', _sgo)
+           #st.write('= ', (_wc/100) * _sgw, '+ ', (1 - (_wc/100)) * _sgo)
+           #_sgfluid = (_wc/100) * _sgw + (1-(_wc/100)) * _sgo
+           #st.write('SG Fluid     : ', _sgfluid, '(selisih/beda 0.001 lbh kecil)')
+           #st.write('Di file xls: 1.004')
+           #st.write('\n')
            
            _pip = round(_pip, 2)
            st.write('PIP          : ', _pip, 'psi')
-           st.write('Di file xls: 523.7896')
-           st.write('Hitung2an:')
-           st.write('PIP = Pwf@Qdes - (MidPerf - PSD) * SGFluid / 2.31')
-           st.write('MidPerf = 0.5(TopPerfoTVD + BottomPerfoTVD)')
-           st.write('= 0.5 (', _top_perfo_tvd, '+ ', _bottom_perfo_tvd, ')')
-           st.write('= 0.5 (', _top_perfo_tvd + _bottom_perfo_tvd, ')')        
-           st.write('=', 0.5 * (_top_perfo_tvd + _bottom_perfo_tvd))
-           st.write('PIP = Pwf@Qdes - (MidPerf - PSD) * SGFluid / 2.31')
-           st.write('= ', _Pwf_at_Qdes, '- (', _MidPerf, '- ', _psd, ') * (',  _sgfluid, '/ 2.31)') 
-           st.write('=', _Pwf_at_Qdes, '-', _MidPerf - _psd, '*',  _sgfluid/2.31 )
-           st.write('=', _Pwf_at_Qdes, '-', (_MidPerf - _psd) * (_sgfluid/2.31) )
-           st.write('=', round(_Pwf_at_Qdes - ((_MidPerf - _psd) * (_sgfluid/2.31)), 2), 'psi (selisih/beda 0.3 lbh besar)')
+           #st.write('Di file xls: 523.7896')
+           #st.write('Hitung2an:')
+           #st.write('PIP = Pwf@Qdes - (MidPerf - PSD) * SGFluid / 2.31')
+           #st.write('MidPerf = 0.5(TopPerfoTVD + BottomPerfoTVD)')
+           #st.write('= 0.5 (', _top_perfo_tvd, '+ ', _bottom_perfo_tvd, ')')
+           #st.write('= 0.5 (', _top_perfo_tvd + _bottom_perfo_tvd, ')')        
+           #st.write('=', 0.5 * (_top_perfo_tvd + _bottom_perfo_tvd))
+           #st.write('PIP = Pwf@Qdes - (MidPerf - PSD) * SGFluid / 2.31')
+           #st.write('= ', _Pwf_at_Qdes, '- (', _MidPerf, '- ', _psd, ') * (',  _sgfluid, '/ 2.31)') 
+           #st.write('=', _Pwf_at_Qdes, '-', _MidPerf - _psd, '*',  _sgfluid/2.31 )
+           #st.write('=', _Pwf_at_Qdes, '-', (_MidPerf - _psd) * (_sgfluid/2.31) )
+           #st.write('=', round(_Pwf_at_Qdes - ((_MidPerf - _psd) * (_sgfluid/2.31)), 2), 'psi (selisih/beda 0.3 lbh besar)')
            #_pip = _Pwf_at_Qdes - (_MidPerf - _psd) * (_sgfluid/2.31) 
         
         with col2:
@@ -406,40 +443,40 @@ if st.button("Save"):
            st.write('P. Casing    : ', _p_casing_hitung, _measurement, 'TVD')
            st.write('Friction Loss: ', _friction_loss, _measurement, 'TVD')
            st.write('% Free Gas     : ', _persen_free_gas, '%')
-           st.write('Di file xls: 51.80 %')
-           st.write('Hitung2an % Free Gas:')
-           st.write('Free Gas = (Vg / Vt) * 100')
-           st.write('= (', _Vg, '/', _Vt, ') * 100')
-           st.write('=', round((_Vg / _Vt) * 100, 2), '(selisih/beda 0.01 lbh kecil)')
-           st.write('\n')
+           #st.write('Di file xls: 51.80 %')
+           #st.write('Hitung2an % Free Gas:')
+           #st.write('Free Gas = (Vg / Vt) * 100')
+           #st.write('= (', _Vg, '/', _Vt, ') * 100')
+           #st.write('=', round((_Vg / _Vt) * 100, 2), '(selisih/beda 0.01 lbh kecil)')
+           #st.write('\n')
         
            _tdh = round(_tdh, 2)
            st.write('TDH            : ', _tdh, _measurement, 'TVD')
-           st.write('Di file xls: 5376.58')
-           st.write('Hitung2an TDH:')
-           st.write('= WFL + WHP + CP + FrictionLoss')
-           st.write('CP Optional, bila tdk dinput, defaultnya nol')
-           st.write('=', _wfl, '+', _whp_hitung, '+', _cp, '+', _friction_loss)
-           st.write('=', round(_wfl + _whp_hitung + _cp + _friction_loss, 2), '(selisih/beda 1.2 lbh kecil)')
-           st.write('\n')
+           #st.write('Di file xls: 5376.58')
+           #st.write('Hitung2an TDH:')
+           #st.write('= WFL + WHP + CP + FrictionLoss')
+           #st.write('CP Optional, bila tdk dinput, defaultnya nol')
+           #st.write('=', _wfl, '+', _whp_hitung, '+', _cp, '+', _friction_loss)
+           #st.write('=', round(_wfl + _whp_hitung + _cp + _friction_loss, 2), '(selisih/beda 1.2 lbh kecil)')
+           #st.write('\n')
         
            _fluid_over_pump = round(_fluid_over_pump, 2)
            st.write('SBHP           : ', _sbhp, 'psig')
            st.write('Fluid Over Pump: ', _fluid_over_pump, _measurement, 'TVD')
-           st.write('Di file xls: 1205.1334')
-           st.write('Hitung2an Fluid Over Pump:')
-           st.write('= (PIP - CP) * 2.31 / SGFluid')
-           st.write('= ((', _pip, '-', _cp, ') * 2.31) /', _sgfluid)
-           st.write('= (', _pip - _cp, '* 2.31) /', _sgfluid)
-           st.write('=', (_pip - _cp) * 2.31, '/', _sgfluid)
-           st.write('=', round(((_pip - _cp) * 2.31) / _sgfluid, 2), '(selisih/beda 1.48 lbh besar)')
-           st.write('\n')
+           #st.write('Di file xls: 1205.1334')
+           #st.write('Hitung2an Fluid Over Pump:')
+           #st.write('= (PIP - CP) * 2.31 / SGFluid')
+           #st.write('= ((', _pip, '-', _cp, ') * 2.31) /', _sgfluid)
+           #st.write('= (', _pip - _cp, '* 2.31) /', _sgfluid)
+           #st.write('=', (_pip - _cp) * 2.31, '/', _sgfluid)
+           #st.write('=', round(((_pip - _cp) * 2.31) / _sgfluid, 2), '(selisih/beda 1.48 lbh besar)')
+           #st.write('\n')
         
            _fluid_gradient = round(_fluid_gradient, 2)
            st.write('FBHP           : ', _fbhp, 'psig')
            st.write('Fluid Gradient : ', _fluid_gradient, 'psi/', _measurement, 'TVD')
-           st.write('Di file xls: 0.43463 (selisih/beda 0.0004 lbh kecil)')
-           st.write('\n')
+           #st.write('Di file xls: 0.43463 (selisih/beda 0.0004 lbh kecil)')
+           #st.write('\n')
            
         st.title("Inflow Performance Relationships")    
         #row5_1, row5_spacer2, row5_2= st.columns((11.1, .1, 3.8))
@@ -471,12 +508,13 @@ if st.button("Save"):
         st.pyplot(fig)
         #with row5_2:
         #st.dataframe(df_ipr_data, hide_index=True)               
+
         new_records = [[new_id_calc, _user_id, _well_name, _field_name, _company, _engineer, _date_calc, \
                           _id_instrument, _id_calc_method, _id_welltype, _id_measurement, _comment_or_info, \
                           _top_perfo_tvd, _top_perfo_md, _bottom_perfo_tvd, _bottom_perfo_md, _qtest, _sbhp, _fbhp, \
                           _producing_gor, _wc, _bht, _sgw, _sgg, _qdes, _psd, _whp, _psd_md, _p_casing, _pb, _cp, \
-                          _api, _sgo, _id_casing_size, _id_casing_id, _id_tubing_size, _id_tubing_id, _id_tubing_coeff, \
-                          _liner_id, _top_liner_at, _bottom_liner_at]]                               
+                          st.session_state.api, st.session_state.sgo, _id_casing_size, _id_tubing_size, _id_tubing_id, \
+                          st.session_state._id_tubing_coeff, _liner_id, _top_liner_at, _bottom_liner_at]]                               
         with open('tmycalc.csv', mode='a', newline='') as f_object:
             #writer_object = csv.writer(file)            
             writer_object = writer(f_object)            
@@ -485,19 +523,15 @@ if st.button("Save"):
             f_object.close() 
                
         if st.button("Confirm"):      
-            st.write('')
-    
-             # creating a list of column names 
-             #column_values = ['id_calc', 'user_id', 'well_name', 'field_name', 'company', 'engineer', 'date_calc', \
-             #                'id_instrument', 'id_calc_method', 'id_welltype', 'id_measurement', 'comment_or_info', \
-             #                'top_perfo_tvd', 'top_perfo_md', 'bottom_perfo_tvd', 'bottom_perfo_md', 'qtest', 'sbhp', 'fbhp', \
-             #                'producing_gor', 'wc', 'bht', 'sgw', 'sgg', 'qdes', 'psd', 'whp', 'psd_md', 'p_casing', 'pb', 'cp', \
-             #                'api', 'sgo', 'id_casing_size', 'id_casing_id', 'id_tubing_size', 'id_tubing_id', 'id_tubing_coeff', \
-             #                'liner_id', 'top_liner_at', 'bottom_liner_at']
-           
-             # add new record from list numpy to the dataframe 
-             #df_temp = pd.DataFrame(data = new_records,  
-             #                  columns = column_values) 
+            st.write('')            
+            #st.session_state["api"] = 0.00; st.session_state.sgo = 0.00    
+            #st.session_state["_id_tubing_coeff"] = 0; st.session_state._tubing_coeff_type = ''    
+            #st.session_state._coefficient = 0
+            
+            #for the_keyyys in st.session_state.keys():
+            #    del st.session_state[the_keyyys]
+                
+            #st.session_state   
 
     elif _id_instrument==1 and _id_calc_method==1: #Downhole Sensor & Straight Line
         #Hitung2an Calculation sblm IPR Curve
@@ -527,11 +561,13 @@ if st.button("Save"):
         _pip = _Pwf_at_Qdes - ((_MidPerf - _psd) * (_sgfluid/2.31)) 
         
         # Rs=Sgg*(( (PIP/18) * (10^(0.0125*API – 0.00091*BHT)) )^1.2048)
-        _Rs=_sgg*(( (_pip/18) * (10**(0.0125*_api - 0.00091*_bht)) )**1.2048)
+        #_Rs=_sgg*(( (_pip/18) * (10**(0.0125*_api - 0.00091*_bht)) )**1.2048)
+        _Rs=_sgg*(( (_pip/18) * (10**(0.0125*st.session_state.api - 0.00091*_bht)) )**1.2048)
     
         # Bo=0.972+0.000147*((Rs*SQRT(SGg/Sgo)+1.25*BHT)^1.175); 
         # _Bo = 0.972+0.000147*((_Rs*math.sqrt(_sgg/_sgo)+1.25*_bht)**1.175) --> math masalah diDeploy
-        _Bo = 0.972+0.000147*((_Rs * (_sgg/_sgo)**0.5 + 1.25 * _bht) ** 1.175)
+        #_Bo = 0.972+0.000147*((_Rs * (_sgg/_sgo)**0.5 + 1.25 * _bht) ** 1.175)
+        _Bo = 0.972+0.000147*((_Rs * (_sgg/st.session_state.sgo)**0.5 + 1.25 * _bht) ** 1.175)
         # Vo=(1-WC)*Qdes*Bo;
         _Vo = (1-(_wc/100))*_qdes*_Bo;
     
@@ -567,7 +603,8 @@ if st.button("Save"):
             _p_casing_hitung = (_p_casing * 2.31 / _sgfluid) / 3.28084 # -> utk jadi meter
     
         # Friction Loss = (2.083*(100/TubingCoeff)^1.85*(Qdes         /34.3)^1.85/TubingID^4.8655)  *PSDft/1000
-        _friction_loss = (2.083*(100/_coefficient)**1.85*(_qdes/34.3)**1.85/_tubing_id**4.8655)*_psd/1000
+        #_friction_loss = (2.083*(100/_coefficient)**1.85*(_qdes/34.3)**1.85/_tubing_id**4.8655)*_psd/1000
+        _friction_loss = (2.083*(100/st.session_state._coefficient)**1.85*(_qdes/34.3)**1.85/_tubing_id**4.8655)*_psd/1000
     
         # % Free Gas = Vg / Vt
         _persen_free_gas = (_Vg / _Vt) * 100
@@ -732,8 +769,8 @@ if st.button("Save"):
                          _id_instrument, _id_calc_method, _id_welltype, _id_measurement, _comment_or_info, \
                          _top_perfo_tvd, _top_perfo_md, _bottom_perfo_tvd, _bottom_perfo_md, _qtest, _sbhp, _fbhp, \
                          _producing_gor, _wc, _bht, _sgw, _sgg, _qdes, _psd, _whp, _psd_md, _p_casing, _pb, _cp, \
-                         _api, _sgo, _id_casing_size, _id_casing_id, _id_tubing_size, _id_tubing_id, _id_tubing_coeff, \
-                         _liner_id, _top_liner_at, _bottom_liner_at]]                               
+                         st.session_state.api, st.session_state.sgo, _id_casing_size, _id_tubing_size, _id_tubing_id, \
+                         st.session_state._id_tubing_coeff, _liner_id, _top_liner_at, _bottom_liner_at]]                               
         with open('tmycalc.csv', mode='a', newline='') as f_object:
             #writer_object = csv.writer(file)            
             writer_object = writer(f_object)            
