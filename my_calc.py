@@ -4,10 +4,6 @@ import pandasql as ps
 import matplotlib.pyplot as plt
 from st_aggrid import AgGrid
 
-#@st.dialog("ID Calculation")
-#def show_id_form():
-#    st.text_input("ID Calculation")
-
 #open datas
 tmycalc = pd.read_csv('tmycalc.csv')
 muserlogin = pd.read_csv('MUserLogin.csv')
@@ -28,8 +24,9 @@ mycalc3 = ps.sqldf("select m.id_calc, m.user_id, u.username, m.well_name, m.fiel
         w.welltype, m.id_measurement, meas.measurement, m.comment_or_info, m.top_perfo_tvd, m.top_perfo_md, \
         m.bottom_perfo_tvd, m.bottom_perfo_md, m.qtest, m.sbhp, m.fbhp, m.producing_gor, m.wc, m.bht, \
         m.sgw, m.sgg, m.qdes, m.psd, m.whp, m.psd_md, m.p_casing, m.pb, m.cp, m.api, m.sgo, \
-        s.casing_size, s.casing_drift_id, tubsize.tubing_size, tubid.tubing_id, \
-        tubcoef.type, tubcoef.coefficient, m.liner_id, m.top_liner_at, m.bottom_liner_at \
+        s.casing_size, casid.casing_id, tubsize.tubing_size, tubid.tubing_id, \
+        tubcoef.type, tubcoef.coefficient, \
+        m.liner_id, m.top_liner_at, m.bottom_liner_at \
         from tmycalc m \
             left join muserlogin u on m.user_id = u.user_id \
             left join minstrument i on m.id_instrument = i.id_instrument \
@@ -37,6 +34,7 @@ mycalc3 = ps.sqldf("select m.id_calc, m.user_id, u.username, m.well_name, m.fiel
             left join mmeasurement meas on m.id_measurement = meas.id_measurement \
             left join mwelltype w on m.id_welltype = w.id_welltype \
             left join mcasingsize s on m.id_casing_size = s.id_casing_size \
+            left join mcasingid casid on m.id_casing_id = casid.id_casing_id \
             left join mtubingsize tubsize on m.id_tubing_size = tubsize.id_tubing_size \
             left join mtubingid tubid on m.id_tubing_id = tubid.id_tubing_id \
             left join mtubingcoeff tubcoef on m.id_tubing_coeff = tubcoef.id_tubing_coeff") 
