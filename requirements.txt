@@ -3,3 +3,4 @@ pandas
 pandasql
 openpyxl
 matplotlib
+aggrid
