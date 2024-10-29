@@ -25,7 +25,7 @@ mycalc3 = ps.sqldf("select m.id_calc, m.user_id, u.username, m.well_name, m.fiel
         m.bottom_perfo_tvd, m.bottom_perfo_md, m.qtest, m.sbhp, m.fbhp, m.producing_gor, m.wc, m.bht, \
         m.sgw, m.sgg, m.qdes, m.psd, m.whp, m.psd_md, m.p_casing, m.pb, m.cp, m.api, m.sgo, \
         s.casing_size, s.casing_drift_id, tubsize.tubing_size, tubid.tubing_id, \
-        tubcoef.type, tubcoef.coefficient, m.liner_id, m.top_liner_at, m.bottom_liner_at \
+        tubcoef.type, tubcoef.coefficient, m.liner_id, m.top_liner_at, m.bottom_liner_at, \
         from tmycalc m \
             left join muserlogin u on m.user_id = u.user_id \
             left join minstrument i on m.id_instrument = i.id_instrument \
