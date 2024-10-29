@@ -3,4 +3,4 @@ pandas
 pandasql
 openpyxl
 matplotlib
-from st_aggrid import AgGrid
+streamlit-aggrid
