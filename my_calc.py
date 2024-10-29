@@ -37,7 +37,8 @@ mycalc3 = ps.sqldf("select m.id_calc, m.user_id, u.username, m.well_name, m.fiel
             left join mtubingid tubid on m.id_tubing_id = tubid.id_tubing_id \
             left join mtubingcoeff tubcoef on m.id_tubing_coeff = tubcoef.id_tubing_coeff") 
 
-AgGrid(mycalc3)
+#AgGrid(mycalc3)
+st.dataframe(mycalc3, hide_index=True)
 
 id_calc_01=0
 col1, col2 = st.columns(2, gap="medium", vertical_alignment="top")
