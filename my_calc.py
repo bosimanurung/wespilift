@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import pandasql as ps
 import matplotlib.pyplot as plt
+from st_aggrid import AgGrid
 
 #@st.dialog("ID Calculation")
 #def show_id_form():
@@ -15,7 +16,6 @@ mcalcmethod = pd.read_csv('MCalcMethod.csv')
 mwelltype = pd.read_csv('MWellType.csv')
 mmeasurement = pd.read_csv('MMeasurement.csv')
 mcasingsize = pd.read_csv('MCasingSize.csv')
-mcasingid = pd.read_csv('MCasingID.csv')
 mtubingsize = pd.read_csv('MTubingSize.csv')
 mtubingid = pd.read_csv('MTubingID.csv')
 mtubingcoeff = pd.read_csv('MTubingCoeff.csv')
@@ -28,9 +28,8 @@ mycalc3 = ps.sqldf("select m.id_calc, m.user_id, u.username, m.well_name, m.fiel
         w.welltype, m.id_measurement, meas.measurement, m.comment_or_info, m.top_perfo_tvd, m.top_perfo_md, \
         m.bottom_perfo_tvd, m.bottom_perfo_md, m.qtest, m.sbhp, m.fbhp, m.producing_gor, m.wc, m.bht, \
         m.sgw, m.sgg, m.qdes, m.psd, m.whp, m.psd_md, m.p_casing, m.pb, m.cp, m.api, m.sgo, \
-        s.casing_size, casid.casing_id, tubsize.tubing_size, tubid.tubing_id, \
-        tubcoef.type, tubcoef.coefficient, \
-        m.liner_id, m.top_liner_at, m.bottom_liner_at \
+        s.casing_size, s.casing_drift_id, tubsize.tubing_size, tubid.tubing_id, \
+        tubcoef.type, tubcoef.coefficient, m.liner_id, m.top_liner_at, m.bottom_liner_at \
         from tmycalc m \
             left join muserlogin u on m.user_id = u.user_id \
             left join minstrument i on m.id_instrument = i.id_instrument \
@@ -38,12 +37,11 @@ mycalc3 = ps.sqldf("select m.id_calc, m.user_id, u.username, m.well_name, m.fiel
             left join mmeasurement meas on m.id_measurement = meas.id_measurement \
             left join mwelltype w on m.id_welltype = w.id_welltype \
             left join mcasingsize s on m.id_casing_size = s.id_casing_size \
-            left join mcasingid casid on m.id_casing_id = casid.id_casing_id \
             left join mtubingsize tubsize on m.id_tubing_size = tubsize.id_tubing_size \
             left join mtubingid tubid on m.id_tubing_id = tubid.id_tubing_id \
             left join mtubingcoeff tubcoef on m.id_tubing_coeff = tubcoef.id_tubing_coeff") 
 
-st.dataframe(mycalc3, hide_index=True)
+AgGrid(mycalc3)
 
 id_calc_01=0
 col1, col2 = st.columns(2, gap="medium", vertical_alignment="top")
@@ -117,7 +115,7 @@ if id_calc_01:
     _p_casing=mycalc4['p_casing'].values[0]; _pb=mycalc4['pb'].values[0]; _cp=mycalc4['cp'].values[0]        
     _api=mycalc4['api'].values[0]; _sgo=mycalc4['sgo'].values[0]
 
-    _casing_size=mycalc4['casing_size'].values[0]; _casing_id=mycalc4['casing_id'].values[0]
+    _casing_size=mycalc4['casing_size'].values[0]; _casing_id=mycalc4['casing_drift_id'].values[0]
     _tubing_size=mycalc4['tubing_size'].values[0]; _tubing_id=mycalc4['tubing_id'].values[0]
     _tubing_coeff_type=mycalc4['type'].values[0]
     _coefficient=mycalc4['coefficient'].values[0]
@@ -158,7 +156,7 @@ if id_calc_01:
         st.write('\n')
         st.header("Casing & Tubing", divider="gray")
         st.write('Casing Size  : ', _casing_size)
-        st.write('Casing ID    : ', _casing_id, 'inch')
+        st.write('Casing Drift ID    : ', _casing_id, 'inch')
         st.write('Tubing Size  : ', _tubing_size)
         st.write('Tubing ID     : ', _tubing_id, 'inch')
         st.write('Tubing Coeffisien: ', _tubing_coeff_type)
