@@ -1,5 +1,5 @@
 import streamlit as st
-
+import pandas as pd
 
 st.set_page_config(
     layout="wide",
@@ -8,6 +8,8 @@ st.set_page_config(
 )
 
 st.sidebar.text('Powered by: ')
+#image = Image.open('logo_wespi.png')
+#st.sidebar.image(image)
 st.sidebar.image('logo_wespi.png')
 
 # -- page setup --
