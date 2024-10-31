@@ -1,6 +1,0 @@
-streamlit
-pandas
-pandasql
-openpyxl
-matplotlib
-streamlit-aggrid
