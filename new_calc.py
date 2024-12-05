@@ -9,7 +9,7 @@ from streamlit_gsheets import GSheetsConnection
 from sessions import sessionstates
 from new_calcb import new_calc_straight
 
-#open datas -----> in folder wespi in gsheet, the file started with copy of
+#open datas -----> in folder wespi in gsheet, the file started with copy of, like copy of TMyCalc ----------------------------
 mnomor1url = "https://docs.google.com/spreadsheets/d/1aENaYtR7LKGYMod5Y7MjP55uu8r2cOsMvCWrFKTWgBo"
 tmycalcurl = "https://docs.google.com/spreadsheets/d/1G1JfxkgHr2F_-1igIzAsNQe-kO9IvQ8SPZLSOjgUpcE"
 if "mnomor1url" not in st.session_state:
