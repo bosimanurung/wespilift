@@ -9,22 +9,22 @@ from streamlit_gsheets import GSheetsConnection
 from sessions import sessionstates
 from new_calcb import new_calc_straight
 
-#open datas -----> in folder wespi in gsheet, the file started with copy of, like copy of TMyCalc ----------------------------
-mnomor1url = "https://docs.google.com/spreadsheets/d/1fcPkcCiKgKSPPoNWl3UQqQb1QvR0GQPXSq35eS6PLk0"
-tmycalcurl = "https://docs.google.com/spreadsheets/d/1V7y4hTLq3bLc7hW6a3OVT9mf92v-cyDVvJSK5UN6ppI"
+#open datas
+mnomor1url = "https://docs.google.com/spreadsheets/d/1aENaYtR7LKGYMod5Y7MjP55uu8r2cOsMvCWrFKTWgBo"
+tmycalcurl = "https://docs.google.com/spreadsheets/d/1G1JfxkgHr2F_-1igIzAsNQe-kO9IvQ8SPZLSOjgUpcE"
 if "mnomor1url" not in st.session_state:
     st.session_state["mnomor1url"] = mnomor1url
 if "tmycalcurl" not in st.session_state:
     st.session_state["tmycalcurl"] = tmycalcurl
-muserloginurl = "https://docs.google.com/spreadsheets/d/1cPMVYXdJ04xwCFWZVCsnJniV9syONw7ww2rl4MvKXtM"
-minstrumenturl = "https://docs.google.com/spreadsheets/d/1TJF8xBpDfRxacSTve03rw1vTCzIuOJHR9F6t_BmEnPg"
-mcalcmethodurl = "https://docs.google.com/spreadsheets/d/1GGgQyLjrzJiRTDMtq5pIXzbQ0VEHycwrsQ7wBxEl4eo"
-mwelltypeurl = "https://docs.google.com/spreadsheets/d/1Cu0q5Iznpx5qKUMpZ9XIYDFHtNcpfWOOcrgN8ld4YQA"
-mmeasurementurl = "https://docs.google.com/spreadsheets/d/1PJIrdZfIaCjyRMGSSXlcxTOfvHpNDOkGBrlocyDEBKw"
-mcasingsizeurl = "https://docs.google.com/spreadsheets/d/1pNFdNLO10HrmsiudQPaIqvdCwaZPN0XhtzksJxGU_rk"
-mtubingsizeurl = "https://docs.google.com/spreadsheets/d/1KDuVmesbA3P0EQNzUx8fF95lIBqTGfFhe0pGMAlnOPI"
-mtubingidurl = "https://docs.google.com/spreadsheets/d/1Sgm-WDqsi85J0KgqTJBJ3AAKyjKkE9MtXNqaucDyAck"
-mtubingcoeffurl = "https://docs.google.com/spreadsheets/d/1CJZkyCDGsrEi94ekIZrHFQNOaWILILfZDclDoyYw1Yk"
+muserloginurl = "https://docs.google.com/spreadsheets/d/19d_mDHySV7j3kYM_dTZb6nBagMY0TEFlQ833vIfRa1E"
+minstrumenturl = "https://docs.google.com/spreadsheets/d/1nJu0PvZ4fyLshLcj-R748mgzlMM9IHjV28FbaSnHMKk"
+mcalcmethodurl = "https://docs.google.com/spreadsheets/d/1afY5AZuqx8re0vlgMfLDBqwHJcG41Sxg9x-d-HiERfY"
+mwelltypeurl = "https://docs.google.com/spreadsheets/d/1kV0fO8LIPJEGTlQAxlprH1AWDWYZf-LWaZKWztMDyKI"
+mmeasurementurl = "https://docs.google.com/spreadsheets/d/1gsQLh87psgj3x2UcLIAzxfSqNnr_dmYt48u2F8HGsnw"
+mcasingsizeurl = "https://docs.google.com/spreadsheets/d/1tcel-Do505_YxZOonwFr4ylpSHlmziB1xN9wWxjgUCo"
+mtubingsizeurl = "https://docs.google.com/spreadsheets/d/19fg8MDz83hKSc-YaX2qYQ-e2OGQRg_XBK0tD46FQGFo"
+mtubingidurl = "https://docs.google.com/spreadsheets/d/1AVWvxiGxZi3hW3WsxTzWI_Xq42612M5RB49VQ_pMWPU"
+mtubingcoeffurl = "https://docs.google.com/spreadsheets/d/12YD09rDt0Xb4xBUaECdQLQB-QXi9H4VDuEC7sO9Mzlo"
 
 bsconnect = st.connection("gsheets", type=GSheetsConnection)
 mnomor1 = bsconnect.read(spreadsheet=mnomor1url)
@@ -666,8 +666,8 @@ if st.button("Save"):
                   st.session_state._id_tubing_coeff, _liner_id, _top_liner_at_tvd, _top_liner_at_md, \
                   _bottom_liner_at_tvd, _bottom_liner_at_md]]   
                
-        update_tmycalc = pd.concat([tmycalc, new_rec], ignore_index=True)
-        bsconnect.update(spreadsheet=tmycalcurl, worksheet="mycalc", data=update_tmycalc)
+        update_tmycalc = pd.concat([st.session_state.tmycalc, new_rec], ignore_index=True)
+        bsconnect.update(spreadsheet=st.session_state.tmycalcurl, worksheet="mycalc", data=update_tmycalc)
 
         #mnomor1url = "https://docs.google.com/spreadsheets/d/1aENaYtR7LKGYMod5Y7MjP55uu8r2cOsMvCWrFKTWgBo"
         #tmycalcurl = "https://docs.google.com/spreadsheets/d/1G1JfxkgHr2F_-1igIzAsNQe-kO9IvQ8SPZLSOjgUpcE"
