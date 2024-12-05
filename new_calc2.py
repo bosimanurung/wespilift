@@ -1069,8 +1069,8 @@ def edit_and_add():
             #    'bottom_liner_at_tvd': _bottom_liner_at_tvd, 'bottom_liner_at_md': _bottom_liner_at_md})
 
             # Removing old entry on gsheets
-            tmycalc.drop(tmycalc[tmycalc["id_calc"] == st.session_state["id_calc_02"]].index,inplace=True)
-            bsconnect.update(spreadsheet=tmycalcurl, worksheet="mycalc", data=tmycalc)
+            st.session_state.tmycalc.drop(st.session_state.tmycalc[st.session_state.tmycalc["id_calc"] == st.session_state["id_calc_02"]].index,inplace=True)
+            bsconnect.update(spreadsheet=st.session_state.tmycalcurl, worksheet="mycalc", data=st.session_state.tmycalc)
 
             # update record with old id_calc not the new one
             new_rec = pd.DataFrame(
