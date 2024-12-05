@@ -9,7 +9,7 @@ from sessions import sessionstates
 from my_calcb import my_calc_straight
 from new_calc2 import edit_and_add
 
-#open datas
+#open datas  -----> in folder wespi in gsheet, the file started with copy of, like copy of TMyCalc ----------------------------
 mnomor1url = "https://docs.google.com/spreadsheets/d/1fcPkcCiKgKSPPoNWl3UQqQb1QvR0GQPXSq35eS6PLk0"
 tmycalcurl = "https://docs.google.com/spreadsheets/d/1V7y4hTLq3bLc7hW6a3OVT9mf92v-cyDVvJSK5UN6ppI"
 if "mnomor1url" not in st.session_state:
