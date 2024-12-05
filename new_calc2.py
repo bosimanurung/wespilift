@@ -103,7 +103,7 @@ def edit_and_add():
         #st.write(_date_calc) di atas sana ternyata _date_calc adalah string, jadi di bawah hrs diconvert ke date type
         # Check if a _date_calc variable is a string
         if isinstance(_date_calc, str):
-            _date_calc = datetime.strptime(_date_calc, "%Y/%m/%d")         
+            _date_calc = datetime.strptime(_date_calc, "%Y-%m-%d")         
         _date_calc = st.date_input("Date Input: ", _date_calc) 
         _well_name = st.text_input("Well Name:", st.session_state["_well_name"])
         _field_name = st.text_input('Field Name:', st.session_state["_field_name"])
