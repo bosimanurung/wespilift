@@ -1086,8 +1086,8 @@ def edit_and_add():
                 "id_tubing_id": _id_tubing_id, "id_tubing_coeff": st.session_state._id_tubing_coeff, "liner_id": _liner_id, "top_liner_at_tvd": _top_liner_at_tvd, \
                 "top_liner_at_md": _top_liner_at_md, "bottom_liner_at_tvd": _bottom_liner_at_tvd, "bottom_liner_at_md": _bottom_liner_at_md,}]
             )  
-            update_tmycalc = pd.concat([tmycalc, new_rec], ignore_index=True)
-            bsconnect.update(spreadsheet=tmycalcurl, worksheet="mycalc", data=update_tmycalc)
+            update_tmycalc = pd.concat([st.session_state.tmycalc, new_rec], ignore_index=True)
+            bsconnect.update(spreadsheet=st.session_state.tmycalcurl, worksheet="mycalc", data=update_tmycalc)
 
             st.session_state["tmycalc"] = update_tmycalc
 
@@ -1516,8 +1516,8 @@ def edit_and_add():
                 "top_liner_at_md": _top_liner_at_md, "bottom_liner_at_tvd": _bottom_liner_at_tvd, "bottom_liner_at_md": _bottom_liner_at_md,}]
             )  
 
-            update_tmycalc = pd.concat([tmycalc, new_rec], ignore_index=True)
-            bsconnect.update(spreadsheet=tmycalcurl, worksheet="mycalc", data=update_tmycalc)            
+            update_tmycalc = pd.concat([st.session_state.tmycalc, new_rec], ignore_index=True)
+            bsconnect.update(spreadsheet=st.session_state.tmycalcurl, worksheet="mycalc", data=update_tmycalc)            
             st.session_state.tmycalc = update_tmycalc
 
             if st.button("Next"):      
@@ -1865,8 +1865,8 @@ def edit_and_add():
                 "top_liner_at_md": _top_liner_at_md, "bottom_liner_at_tvd": _bottom_liner_at_tvd, "bottom_liner_at_md": _bottom_liner_at_md,}]
             )  
 
-            update_tmycalc = pd.concat([tmycalc, new_rec], ignore_index=True)
-            bsconnect.update(spreadsheet=tmycalcurl, worksheet="mycalc", data=update_tmycalc)
+            update_tmycalc = pd.concat([st.session_state.tmycalc, new_rec], ignore_index=True)
+            bsconnect.update(spreadsheet=st.session_state.tmycalcurl, worksheet="mycalc", data=update_tmycalc)
             st.session_state.tmycalc = update_tmycalc
 
             if st.button("Next"):
